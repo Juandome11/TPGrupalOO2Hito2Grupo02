@@ -7,11 +7,10 @@
 	<h1 class="h3">Registrar una unidad de venta</h1>
 	<p class="text-muted">Se crea la unidad junto con su responsable y el usuario con el que va a ingresar.</p>
 
-	<div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
-		<div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
-	</div>
-
 	<form th:action="@{/unidad/registro}" th:object="${registro}" method="post">
+		<div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+			<div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+		</div>
 		<h2 class="h5 mt-3">Unidad</h2>
 		<div class="form-row">
 			<div class="form-group col-md-6">

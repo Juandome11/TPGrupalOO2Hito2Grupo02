@@ -9,13 +9,12 @@
 		Al dar de alta se le envía un mail al empleado con su usuario (su email) y una contraseña generada.
 	</p>
 
-	<div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
-		<div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
-	</div>
-
 	<form th:object="${empleado}"
 		th:action="${edicion} ? @{/responsable/empleados/{id}(id=${empleado.id})} : @{/responsable/empleados}"
 		method="post">
+		<div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+			<div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+		</div>
 		<div class="form-row">
 			<div class="form-group col-md-6">
 				<label for="tipo">Tipo de empleado</label>
