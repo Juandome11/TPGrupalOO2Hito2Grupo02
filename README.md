@@ -51,8 +51,10 @@ Java 17 · Spring Boot 3.3 · Maven · MySQL · Spring Data JPA · Spring Securi
 | Administrador | `admin` | `admin123` |
 | Responsable (Food Truck "Parrilla Don Mario") | `resp.parrilla` | `resp123` |
 | Responsable (Puesto "Dulces del Sur") | `resp.dulces` | `resp123` |
+| Responsable (Food Truck "Parrilla del Otono", festival ya terminado) | `resp.otono` | `resp123` |
 | Empleado (cocinero) | `lucia.cocina@epicentro.test` | `emp123` |
 | Empleado (cajero) | `marcos.caja@epicentro.test` | `emp123` |
+| Empleado con historial en 2 festivales (Lucía: Otoño y Primavera) | `lucia.cocina@epicentro.test` | `emp123` |
 
 ### Tests
 
@@ -73,7 +75,8 @@ Base grupal inicial (Hito 2), subida directo a `main`:
 | Cálculo de canon (Food Truck / Puesto) | Responsable | Grupo | base inicial |
 | Reporte de recaudación (`ReporteVentaDTO`) | Responsable | Grupo | base inicial |
 | Ver festivales y unidades de venta de un festival | Administrador | Grupo | base inicial |
-| Ver festival y unidad actual, sueldo y descarga de recibo en PDF | Empleado | Grupo | base inicial |
+| Ver festival y unidad actual, historial de festivales/unidades en los que trabajó con el sueldo de cada uno, y descarga del recibo en PDF por festival | Empleado | Grupo | base inicial |
+| Reasignación de un empleado que ya trabajó en un festival anterior (conserva su usuario y no se le envía otro mail) | Responsable | Grupo | base inicial |
 
 Casos de uso individuales (2 por integrante, cada uno en su rama `CUFuncionalidadNombreApellido` + Pull Request):
 

@@ -94,7 +94,10 @@ public class ResponsableController {
 		if (!bindingResult.hasErrors()) {
 			try {
 				var resultado = staffService.altaEmpleado(principal.getName(), dto);
-				if (resultado.mailEnviado()) {
+				if (resultado.reasignado()) {
+					flash.addFlashAttribute("ok", "Ese empleado ya había trabajado en un festival anterior: se lo asignó a "
+							+ "tu unidad y conserva su usuario y contraseña.");
+				} else if (resultado.mailEnviado()) {
 					flash.addFlashAttribute("ok", "Empleado dado de alta. Se le envió un mail con su usuario y contraseña.");
 				} else {
 					flash.addFlashAttribute("advertencia", "El empleado se dio de alta, pero no se pudo enviar el mail con "

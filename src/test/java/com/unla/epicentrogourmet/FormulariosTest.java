@@ -2,6 +2,7 @@ package com.unla.epicentrogourmet;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,6 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.unla.epicentrogourmet.repositories.IAsignacionRepository;
+import com.unla.epicentrogourmet.repositories.IStaffRepository;
 import com.unla.epicentrogourmet.services.IEmailService;
 
 /**
@@ -37,6 +40,12 @@ class FormulariosTest {
 
 	@Autowired
 	private MockMvc mvc;
+
+	@Autowired
+	private IAsignacionRepository asignacionRepository;
+
+	@Autowired
+	private IStaffRepository staffRepository;
 
 	@MockBean
 	private IEmailService emailService;
@@ -74,6 +83,22 @@ class FormulariosTest {
 	void altaDeEmpleadoConDniRepetidoMuestraElError() throws Exception {
 		mvc.perform(altaEmpleado(LocalDate.now().minusYears(25), "30444555")).andExpect(status().isOk())
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("Ya existe una persona")));
+	}
+
+	@Test
+	@WithMockUser(username = "resp.parrilla", roles = "RESPONSABLE")
+	void empleadoDeUnFestivalAnteriorSeReasignaConservandoSuUsuario() throws Exception {
+		Long tomasId = staffRepository.findByDni("37999000").orElseThrow().getId();
+		long antes = asignacionRepository.historialDe(tomasId).size();
+
+		mvc.perform(altaEmpleado(LocalDate.now().minusYears(25), "37999000")).andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/responsable/empleados"));
+
+		// no se le crea otro usuario ni se envía mail: conserva el que ya tenía
+		verifyNoInteractions(emailService);
+		org.assertj.core.api.Assertions.assertThat(asignacionRepository.historialDe(tomasId)).hasSize((int) antes + 1);
+		org.assertj.core.api.Assertions.assertThat(staffRepository.findByDni("37999000").orElseThrow().getUnidadVenta().getNombreComercial())
+				.isEqualTo("Parrilla Don Mario");
 	}
 
 	@Test

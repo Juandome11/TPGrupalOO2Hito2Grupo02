@@ -29,26 +29,34 @@
 						(<span th:text="${unidad.tipo}"></span>)</p>
 				</div>
 			</div>
+		</div>
+	</div>
 
-			<div class="card" th:if="${recibo != null}">
-				<div class="card-header">Sueldo en este festival</div>
-				<div class="card-body">
-					<table class="table table-sm mb-3">
-						<tr><td>Sueldo base</td>
-							<td class="money" th:text="${'$ ' + #numbers.formatDecimal(recibo.sueldoBase, 1, 'POINT', 2, 'COMMA')}"></td></tr>
-						<tr><td th:text="${recibo.conceptoAdicional}"></td>
-							<td class="money" th:text="${'$ ' + #numbers.formatDecimal(recibo.montoAdicional, 1, 'POINT', 2, 'COMMA')}"></td></tr>
-						<tr><td>Porcentaje según duración del festival (<span th:text="${recibo.diasFestival}"></span> días)</td>
-							<td class="money" th:text="${#numbers.formatDecimal(recibo.porcentajeAplicado.multiply(100), 1, 0) + ' %'}"></td></tr>
-						<tr class="font-weight-bold"><td>Total a cobrar</td>
-							<td class="money" th:text="${'$ ' + #numbers.formatDecimal(recibo.totalACobrar, 1, 'POINT', 2, 'COMMA')}"></td></tr>
-					</table>
-					<a class="btn btn-primary" th:href="@{/empleado/recibo/{id}(id=${festival.id})}">Descargar recibo de sueldo (PDF)</a>
-				</div>
-			</div>
-			<div class="alert alert-warning" th:if="${recibo == null}">
-				El festival todavía no tiene costos configurados, por eso no se puede calcular tu sueldo.
-			</div>
+	<div class="card mt-3" th:if="${empleado != null}">
+		<div class="card-header">Mi historial: festivales y unidades de venta en las que trabajé</div>
+		<div class="card-body">
+			<p class="text-muted mb-0" th:if="${#lists.isEmpty(historial)}">Todavía no tenés trabajos registrados.</p>
+			<table class="table table-sm mb-0" th:unless="${#lists.isEmpty(historial)}">
+				<thead>
+				<tr><th>Festival</th><th>Unidad de venta</th><th>Período</th><th class="money">Sueldo recibido</th><th></th></tr>
+				</thead>
+				<tbody>
+				<tr th:each="t : ${historial}">
+					<td><span th:text="${t.festival}"></span>
+						<span class="badge badge-success" th:if="${t.festivalActivo}">en curso</span></td>
+					<td><span th:text="${t.unidad}"></span>
+						<span class="badge badge-info" th:if="${t.unidadActual}">actual</span></td>
+					<td th:if="${t.recibo != null}"
+						th:text="${#temporals.format(t.recibo.festivalDesde, 'dd/MM/yyyy') + ' al ' + #temporals.format(t.recibo.festivalHasta, 'dd/MM/yyyy')}"></td>
+					<td th:if="${t.recibo == null}">-</td>
+					<td class="money" th:if="${t.recibo != null}"
+						th:text="${'$ ' + #numbers.formatDecimal(t.recibo.totalACobrar, 1, 'POINT', 2, 'COMMA')}"></td>
+					<td class="money" th:if="${t.recibo == null}">Sin costos configurados</td>
+					<td><a class="btn btn-sm btn-primary" th:if="${t.recibo != null}"
+						   th:href="@{/empleado/recibo/{id}(id=${t.asignacionId})}">Recibo (PDF)</a></td>
+				</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>

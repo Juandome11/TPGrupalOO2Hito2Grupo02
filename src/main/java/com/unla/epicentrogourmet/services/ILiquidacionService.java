@@ -1,11 +1,11 @@
 package com.unla.epicentrogourmet.services;
 
 import com.unla.epicentrogourmet.dtos.ReciboSueldoDTO;
-import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.entities.Staff;
+import com.unla.epicentrogourmet.entities.UnidadVenta;
 
 public interface ILiquidacionService {
 
-	/** Calcula lo que cobra el empleado por su trabajo en el festival, según los Costo del festival. */
-	ReciboSueldoDTO calcular(Staff empleado, Festival festival);
+	/** Calcula lo que cobró el empleado por trabajar en esa unidad, según los Costo del festival de la unidad. */
+	ReciboSueldoDTO calcular(Staff empleado, UnidadVenta unidad);
 }

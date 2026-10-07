@@ -9,6 +9,7 @@ import com.unla.epicentrogourmet.entities.Cocinero;
 import com.unla.epicentrogourmet.entities.Costo;
 import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.entities.Staff;
+import com.unla.epicentrogourmet.entities.UnidadVenta;
 import com.unla.epicentrogourmet.exceptions.NegocioException;
 import com.unla.epicentrogourmet.services.ILiquidacionService;
 
@@ -26,7 +27,8 @@ public class LiquidacionService implements ILiquidacionService {
 	private static final BigDecimal MEDIO = new BigDecimal("0.5");
 
 	@Override
-	public ReciboSueldoDTO calcular(Staff empleado, Festival festival) {
+	public ReciboSueldoDTO calcular(Staff empleado, UnidadVenta unidadVenta) {
+		Festival festival = unidadVenta.getFestival();
 		Costo costo = festival.getCosto();
 		if (costo == null) {
 			throw new NegocioException("El festival \"" + festival.getNombre() + "\" no tiene costos configurados.");
@@ -46,9 +48,8 @@ public class LiquidacionService implements ILiquidacionService {
 		}
 
 		BigDecimal total = costo.getSueldoBase().add(adicional).multiply(porcentaje);
-		String unidad = empleado.getUnidadVenta() != null ? empleado.getUnidadVenta().getNombreComercial() : "-";
 		return new ReciboSueldoDTO(empleado.getNombreCompleto(), empleado.getDni(), empleado.getTipo(),
-				festival.getNombre(), unidad, festival.getFechaInicio(), festival.getFechaFin(), dias,
+				festival.getNombre(), unidadVenta.getNombreComercial(), festival.getFechaInicio(), festival.getFechaFin(), dias,
 				costo.getSueldoBase(), concepto, adicional, porcentaje, total);
 	}
 

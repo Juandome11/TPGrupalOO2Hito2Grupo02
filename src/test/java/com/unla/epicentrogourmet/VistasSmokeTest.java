@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+
+import com.unla.epicentrogourmet.repositories.IAsignacionRepository;
 
 /**
  * Recorre las pantallas de cada rol contra la base cargada con scripts/datos_prueba.sql.
@@ -23,6 +26,9 @@ class VistasSmokeTest {
 
 	@Autowired
 	private MockMvc mvc;
+
+	@Autowired
+	private IAsignacionRepository asignacionRepository;
 
 	@Test
 	void paginasPublicas() throws Exception {
@@ -52,9 +58,24 @@ class VistasSmokeTest {
 
 	@Test
 	@WithMockUser(username = "lucia.cocina@epicentro.test", roles = "EMPLEADO")
-	void vistasDelEmpleado() throws Exception {
-		mvc.perform(get("/empleado")).andExpect(status().isOk());
-		mvc.perform(get("/empleado/recibo/1")).andExpect(status().isOk())
-				.andExpect(content().contentType("application/pdf"));
+	void vistasDelEmpleadoConHistorialDeVariosFestivales() throws Exception {
+		mvc.perform(get("/empleado")).andExpect(status().isOk())
+				.andExpect(content().string(Matchers.containsString("Parrilla Don Mario")))
+				.andExpect(content().string(Matchers.containsString("Parrilla del Otono")));
+
+		// Lucia (staff 3) trabajó en dos unidades: cada una tiene su recibo.
+		var historial = asignacionRepository.historialDe(3L);
+		org.assertj.core.api.Assertions.assertThat(historial).hasSize(2);
+		for (var asignacion : historial) {
+			mvc.perform(get("/empleado/recibo/" + asignacion.getId())).andExpect(status().isOk())
+					.andExpect(content().contentType("application/pdf"));
+		}
+	}
+
+	@Test
+	@WithMockUser(username = "marcos.caja@epicentro.test", roles = "EMPLEADO")
+	void unEmpleadoNoPuedeDescargarElReciboDeOtro() throws Exception {
+		Long deLucia = asignacionRepository.historialDe(3L).get(0).getId();
+		mvc.perform(get("/empleado/recibo/" + deLucia)).andExpect(status().isNotFound());
 	}
 }
