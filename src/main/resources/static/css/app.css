@@ -1,0 +1,4 @@
+body { background: #f6f6f4; }
+.festival-card .card-header { font-weight: 600; }
+.table-sm td, .table-sm th { vertical-align: middle; }
+.money { text-align: right; white-space: nowrap; }

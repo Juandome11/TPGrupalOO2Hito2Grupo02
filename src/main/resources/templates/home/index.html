@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inicio')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container my-4">
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<div>
+			<h1 class="h3 mb-0">Festivales</h1>
+			<p class="text-muted mb-0">Centro de convenciones y predio ferial Epicentro Gourmet</p>
+		</div>
+		<a class="btn btn-primary" th:href="@{/unidad/registro}">Registrar una unidad de venta</a>
+	</div>
+
+	<div class="alert alert-info" th:if="${festivales.isEmpty()}">Todavía no hay festivales cargados.</div>
+
+	<div class="row">
+		<div class="col-md-6 mb-3" th:each="f : ${festivales}">
+			<div class="card festival-card h-100">
+				<div class="card-header" th:text="${f.nombre}">Festival</div>
+				<div class="card-body">
+					<p class="mb-1"><strong>Temporada:</strong> <span th:text="${f.temporada}"></span></p>
+					<p class="mb-1"><strong>Fechas:</strong>
+						<span th:text="${#temporals.format(f.fechaInicio, 'dd/MM/yyyy')}"></span> al
+						<span th:text="${#temporals.format(f.fechaFin, 'dd/MM/yyyy')}"></span>
+						(<span th:text="${f.duracionDias}"></span> días)
+					</p>
+					<span class="badge badge-success" th:if="${f.estaActivo(hoy)}">En curso</span>
+					<span class="badge badge-secondary" th:if="${hoy.isBefore(f.fechaInicio)}">Próximo</span>
+					<span class="badge badge-dark" th:if="${hoy.isAfter(f.fechaFin)}">Finalizado</span>
+				</div>
+				<div class="card-footer" th:unless="${hoy.isAfter(f.fechaFin)}">
+					<a class="btn btn-sm btn-outline-primary" th:href="@{/unidad/registro(festivalId=${f.id})}">
+						Registrar unidad en este festival
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

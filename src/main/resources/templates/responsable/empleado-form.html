@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Empleado')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container my-4" style="max-width: 720px;">
+	<h1 class="h3 mb-1" th:text="${edicion ? 'Modificar empleado' : 'Alta de empleado'}">Empleado</h1>
+	<p class="text-muted" th:unless="${edicion}">
+		Al dar de alta se le envía un mail al empleado con su usuario (su email) y una contraseña generada.
+	</p>
+
+	<div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+		<div th:each="e : ${#fields.globalErrors()}" th:text="${e}"></div>
+	</div>
+
+	<form th:object="${empleado}"
+		th:action="${edicion} ? @{/responsable/empleados/{id}(id=${empleado.id})} : @{/responsable/empleados}"
+		method="post">
+		<div class="form-row">
+			<div class="form-group col-md-6">
+				<label for="tipo">Tipo de empleado</label>
+				<select class="form-control" id="tipo" th:field="*{tipo}" th:disabled="${edicion}" onchange="cambiarTipo()">
+					<option value="COCINERO">Cocina</option>
+					<option value="CAJERO">Cajero</option>
+				</select>
+				<input type="hidden" th:if="${edicion}" name="tipo" th:value="${empleado.tipo}">
+			</div>
+			<div class="form-group col-md-6" id="grupoRol">
+				<label for="rolCocina">Rol en la cocina</label>
+				<select class="form-control" id="rolCocina" th:field="*{rolCocina}">
+					<option value="">Elegí un rol</option>
+					<option th:each="r : ${roles}" th:value="${r}" th:text="${r.descripcion}"></option>
+				</select>
+			</div>
+			<div class="form-group col-md-6" id="grupoTurno">
+				<label for="turno">Turno</label>
+				<select class="form-control" id="turno" th:field="*{turno}">
+					<option value="">Elegí un turno</option>
+					<option th:each="t : ${turnos}" th:value="${t}" th:text="${t.descripcion}"></option>
+				</select>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group col-md-6">
+				<label for="nombre">Nombre</label>
+				<input type="text" class="form-control" id="nombre" th:field="*{nombre}">
+				<small class="text-danger" th:errors="*{nombre}"></small>
+			</div>
+			<div class="form-group col-md-6">
+				<label for="apellido">Apellido</label>
+				<input type="text" class="form-control" id="apellido" th:field="*{apellido}">
+				<small class="text-danger" th:errors="*{apellido}"></small>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group col-md-6">
+				<label for="dni">DNI</label>
+				<input type="text" class="form-control" id="dni" th:field="*{dni}">
+				<small class="text-danger" th:errors="*{dni}"></small>
+			</div>
+			<div class="form-group col-md-6">
+				<label for="email">Email (será su usuario)</label>
+				<input type="email" class="form-control" id="email" th:field="*{email}">
+				<small class="text-danger" th:errors="*{email}"></small>
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-group col-md-6">
+				<label for="fechaNacimiento">Fecha de nacimiento</label>
+				<input type="date" class="form-control" id="fechaNacimiento" th:field="*{fechaNacimiento}">
+				<small class="text-danger" th:errors="*{fechaNacimiento}"></small>
+			</div>
+			<div class="form-group col-md-6">
+				<label for="fechaIngreso">Fecha de ingreso</label>
+				<input type="date" class="form-control" id="fechaIngreso" th:field="*{fechaIngreso}">
+				<small class="text-danger" th:errors="*{fechaIngreso}"></small>
+			</div>
+		</div>
+		<button type="submit" class="btn btn-primary" th:text="${edicion ? 'Guardar cambios' : 'Dar de alta'}">Guardar</button>
+		<a class="btn btn-link" th:href="@{/responsable/empleados}">Cancelar</a>
+	</form>
+</div>
+
+<script>
+	function cambiarTipo() {
+		var cocina = document.getElementById('tipo').value === 'COCINERO';
+		document.getElementById('grupoRol').style.display = cocina ? '' : 'none';
+		document.getElementById('grupoTurno').style.display = cocina ? 'none' : '';
+	}
+	cambiarTipo();
+</script>
+</body>
+</html>

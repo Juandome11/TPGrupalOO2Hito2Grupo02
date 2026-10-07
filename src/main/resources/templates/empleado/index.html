@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mi información')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container my-4" style="max-width: 820px;">
+	<div class="alert alert-warning" th:if="${empleado == null}">No encontramos tu ficha de personal.</div>
+
+	<div th:if="${empleado != null}">
+		<h1 class="h3 mb-1" th:text="${empleado.nombreCompleto}">Empleado</h1>
+		<p class="text-muted" th:text="${empleado.tipo}"></p>
+
+		<div class="alert alert-info" th:if="${festival == null}">Todavía no estás asignado a ninguna unidad de venta.</div>
+
+		<div th:if="${festival != null}">
+			<div class="card mb-3">
+				<div class="card-header">Dónde trabajo</div>
+				<div class="card-body">
+					<div class="alert alert-success" th:if="${festivalActivo}">
+						Tenés que trabajar hoy: el festival está en curso.
+					</div>
+					<div class="alert alert-secondary" th:unless="${festivalActivo}">
+						El festival no está en curso en este momento.
+					</div>
+					<p class="mb-1"><strong>Festival:</strong> <span th:text="${festival.nombre}"></span>
+						(<span th:text="${#temporals.format(festival.fechaInicio, 'dd/MM/yyyy')}"></span> al
+						<span th:text="${#temporals.format(festival.fechaFin, 'dd/MM/yyyy')}"></span>)</p>
+					<p class="mb-0"><strong>Unidad de venta:</strong> <span th:text="${unidad.nombreComercial}"></span>
+						(<span th:text="${unidad.tipo}"></span>)</p>
+				</div>
+			</div>
+
+			<div class="card" th:if="${recibo != null}">
+				<div class="card-header">Sueldo en este festival</div>
+				<div class="card-body">
+					<table class="table table-sm mb-3">
+						<tr><td>Sueldo base</td>
+							<td class="money" th:text="${'$ ' + #numbers.formatDecimal(recibo.sueldoBase, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+						<tr><td th:text="${recibo.conceptoAdicional}"></td>
+							<td class="money" th:text="${'$ ' + #numbers.formatDecimal(recibo.montoAdicional, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+						<tr><td>Porcentaje según duración del festival (<span th:text="${recibo.diasFestival}"></span> días)</td>
+							<td class="money" th:text="${#numbers.formatDecimal(recibo.porcentajeAplicado.multiply(100), 1, 0) + ' %'}"></td></tr>
+						<tr class="font-weight-bold"><td>Total a cobrar</td>
+							<td class="money" th:text="${'$ ' + #numbers.formatDecimal(recibo.totalACobrar, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+					</table>
+					<a class="btn btn-primary" th:href="@{/empleado/recibo/{id}(id=${festival.id})}">Descargar recibo de sueldo (PDF)</a>
+				</div>
+			</div>
+			<div class="alert alert-warning" th:if="${recibo == null}">
+				El festival todavía no tiene costos configurados, por eso no se puede calcular tu sueldo.
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

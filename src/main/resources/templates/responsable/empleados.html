@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Empleados')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container my-4">
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<h1 class="h3 mb-0">Empleados activos</h1>
+		<a class="btn btn-primary" th:href="@{/responsable/empleados/nuevo}">Dar de alta un empleado</a>
+	</div>
+	<div th:replace="~{fragments/layout :: mensajes}"></div>
+
+	<form class="form-inline mb-3" th:action="@{/responsable/empleados}" method="get">
+		<input type="text" class="form-control mr-2 mb-2" name="texto" th:value="${texto}" placeholder="Nombre o apellido">
+		<input type="text" class="form-control mr-2 mb-2" name="dni" th:value="${dni}" placeholder="DNI">
+		<select class="form-control mr-2 mb-2" name="tipo">
+			<option value="">Todos los tipos</option>
+			<option value="COCINERO" th:selected="${tipo == 'COCINERO'}">Cocina</option>
+			<option value="CAJERO" th:selected="${tipo == 'CAJERO'}">Cajeros</option>
+		</select>
+		<button type="submit" class="btn btn-outline-secondary mb-2">Filtrar</button>
+		<a class="btn btn-link mb-2" th:href="@{/responsable/empleados}">Limpiar</a>
+	</form>
+
+	<div class="alert alert-info" th:if="${empleados.isEmpty()}">No hay empleados activos para mostrar.</div>
+	<table class="table table-striped table-sm bg-white" th:unless="${empleados.isEmpty()}">
+		<thead class="thead-dark">
+			<tr><th>Apellido y nombre</th><th>DNI</th><th>Email</th><th>Función</th><th>Ingreso</th><th></th></tr>
+		</thead>
+		<tbody>
+			<tr th:each="e : ${empleados}">
+				<td th:text="${e.apellido + ', ' + e.nombre}"></td>
+				<td th:text="${e.dni}"></td>
+				<td th:text="${e.email}"></td>
+				<td th:text="${e.tipo}"></td>
+				<td th:text="${#temporals.format(e.fechaIngreso, 'dd/MM/yyyy')}"></td>
+				<td class="text-right">
+					<a class="btn btn-sm btn-outline-primary" th:href="@{/responsable/empleados/{id}/editar(id=${e.id})}">Modificar</a>
+					<form class="d-inline" th:action="@{/responsable/empleados/{id}/eliminar(id=${e.id})}" method="post"
+						onsubmit="return confirm('¿Dar de baja a este empleado?');">
+						<button type="submit" class="btn btn-sm btn-outline-danger">Dar de baja</button>
+					</form>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<h2 class="h5 mt-4" th:unless="${eliminados.isEmpty()}">Empleados dados de baja</h2>
+	<table class="table table-sm bg-white" th:unless="${eliminados.isEmpty()}">
+		<tbody>
+			<tr th:each="e : ${eliminados}">
+				<td th:text="${e.apellido + ', ' + e.nombre}"></td>
+				<td th:text="${e.dni}"></td>
+				<td th:text="${e.tipo}"></td>
+				<td class="text-right">
+					<form class="d-inline" th:action="@{/responsable/empleados/{id}/reactivar(id=${e.id})}" method="post">
+						<button type="submit" class="btn btn-sm btn-outline-success">Reactivar</button>
+					</form>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</body>
+</html>

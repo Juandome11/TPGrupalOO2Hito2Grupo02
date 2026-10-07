@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(titulo)">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${titulo} + ' - Epicentro Gourmet'">Epicentro Gourmet</title>
+	<link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+	<a class="navbar-brand" th:href="@{/}">Epicentro Gourmet</a>
+	<ul class="navbar-nav mr-auto">
+		<li class="nav-item" sec:authorize="hasRole('ADMIN')">
+			<a class="nav-link" th:href="@{/admin}">Festivales</a>
+		</li>
+		<li class="nav-item" sec:authorize="hasRole('RESPONSABLE')">
+			<a class="nav-link" th:href="@{/responsable}">Mi unidad</a>
+		</li>
+		<li class="nav-item" sec:authorize="hasRole('RESPONSABLE')">
+			<a class="nav-link" th:href="@{/responsable/empleados}">Empleados</a>
+		</li>
+		<li class="nav-item" sec:authorize="hasRole('RESPONSABLE')">
+			<a class="nav-link" th:href="@{/responsable/platos}">Platos</a>
+		</li>
+		<li class="nav-item" sec:authorize="hasRole('RESPONSABLE')">
+			<a class="nav-link" th:href="@{/responsable/recaudacion}">Recaudación</a>
+		</li>
+		<li class="nav-item" sec:authorize="hasRole('EMPLEADO')">
+			<a class="nav-link" th:href="@{/empleado}">Mi información</a>
+		</li>
+	</ul>
+	<ul class="navbar-nav align-items-center">
+		<li class="nav-item" sec:authorize="!isAuthenticated()">
+			<a class="nav-link" th:href="@{/unidad/registro}">Registrar unidad de venta</a>
+		</li>
+		<li class="nav-item" sec:authorize="!isAuthenticated()">
+			<a class="nav-link" th:href="@{/login}">Iniciar sesión</a>
+		</li>
+		<li class="nav-item" sec:authorize="isAuthenticated()">
+			<span class="navbar-text mr-3" sec:authentication="name">usuario</span>
+		</li>
+		<li class="nav-item" sec:authorize="isAuthenticated()">
+			<form th:action="@{/logout}" method="post" class="form-inline">
+				<button type="submit" class="btn btn-outline-light btn-sm">Salir</button>
+			</form>
+		</li>
+	</ul>
+</nav>
+
+<div th:fragment="mensajes">
+	<div class="alert alert-success" th:if="${ok}" th:text="${ok}"></div>
+	<div class="alert alert-warning" th:if="${advertencia}" th:text="${advertencia}"></div>
+	<div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+</div>
+
+</body>
+</html>

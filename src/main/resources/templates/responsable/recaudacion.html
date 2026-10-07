@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Recaudación')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container my-4" style="max-width: 640px;">
+	<h1 class="h3 mb-3">Reporte de recaudación</h1>
+	<div class="alert alert-warning" th:if="${reporte == null}">No tenés una unidad de venta asignada.</div>
+	<div class="card" th:if="${reporte != null}">
+		<div class="card-body">
+			<p class="mb-1"><strong>Festival:</strong> <span th:text="${reporte.festivalNombre}"></span></p>
+			<p class="mb-3"><strong>Unidad:</strong> <span th:text="${reporte.unidadNombre}"></span></p>
+			<p class="text-muted mb-0">Recaudación total (suma de cantidad por precio de venta de todos los pedidos)</p>
+			<p class="display-4 mb-0"
+				th:text="${'$ ' + #numbers.formatDecimal(reporte.recaudacionTotal, 1, 'POINT', 2, 'COMMA')}"></p>
+		</div>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Platos')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container my-4">
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<h1 class="h3 mb-0">Platos de mi unidad</h1>
+		<a class="btn btn-primary" th:href="@{/responsable/platos/nuevo}">Agregar plato</a>
+	</div>
+	<div th:replace="~{fragments/layout :: mensajes}"></div>
+
+	<div class="alert alert-info" th:if="${platos.isEmpty()}">Todavía no cargaste platos.</div>
+	<table class="table table-striped table-sm bg-white" th:unless="${platos.isEmpty()}">
+		<thead class="thead-dark">
+			<tr><th>Nombre</th><th class="money">Precio de venta</th><th class="money">Costo de producción</th></tr>
+		</thead>
+		<tbody>
+			<tr th:each="p : ${platos}">
+				<td th:text="${p.nombre}"></td>
+				<td class="money" th:text="${'$ ' + #numbers.formatDecimal(p.precioVenta, 1, 'POINT', 2, 'COMMA')}"></td>
+				<td class="money" th:text="${'$ ' + #numbers.formatDecimal(p.costoProduccion, 1, 'POINT', 2, 'COMMA')}"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+</body>
+</html>

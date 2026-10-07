@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mi unidad')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container my-4">
+	<div th:replace="~{fragments/layout :: mensajes}"></div>
+	<div class="alert alert-warning" th:if="${unidad == null}">No tenés una unidad de venta asignada.</div>
+
+	<div th:if="${unidad != null}">
+		<h1 class="h3" th:text="${unidad.nombreComercial}">Unidad</h1>
+		<p class="text-muted" th:text="${unidad.tipo + ' - Código ' + unidad.codigo}"></p>
+
+		<div class="row">
+			<div class="col-md-6 mb-3">
+				<div class="card h-100">
+					<div class="card-header">Festival</div>
+					<div class="card-body">
+						<p class="mb-1"><strong th:text="${unidad.festival.nombre}"></strong></p>
+						<p class="mb-1">
+							<span th:text="${#temporals.format(unidad.festival.fechaInicio, 'dd/MM/yyyy')}"></span> al
+							<span th:text="${#temporals.format(unidad.festival.fechaFin, 'dd/MM/yyyy')}"></span>
+						</p>
+						<p class="mb-0">Superficie: <span th:text="${unidad.superficie}"></span> m²</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6 mb-3">
+				<div class="card h-100">
+					<div class="card-header">Canon a pagar</div>
+					<div class="card-body">
+						<p class="h4 mb-0" th:if="${canon != null}"
+							th:text="${'$ ' + #numbers.formatDecimal(canon, 1, 'POINT', 2, 'COMMA')}"></p>
+						<p class="text-muted mb-0" th:if="${canon == null}">El festival no tiene costos configurados.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<a class="btn btn-primary" th:href="@{/responsable/empleados}">Empleados</a>
+		<a class="btn btn-primary" th:href="@{/responsable/platos}">Platos</a>
+		<a class="btn btn-outline-primary" th:href="@{/responsable/recaudacion}">Reporte de recaudación</a>
+	</div>
+</div>
+</body>
+</html>
