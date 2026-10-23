@@ -6,7 +6,6 @@
 <div class="container my-4">
 	<a th:href="@{/admin}">&larr; Volver a festivales</a>
 	<h1 class="h3 my-3">Unidades de venta de <span th:text="${festival.nombre}"></span></h1>
-
 	<div class="alert alert-info" th:if="${unidades.isEmpty()}">Este festival todavía no tiene unidades registradas.</div>
 
 	<table class="table table-striped table-sm bg-white" th:unless="${unidades.isEmpty()}">
