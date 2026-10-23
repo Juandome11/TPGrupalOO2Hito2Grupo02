@@ -16,7 +16,7 @@
 				<td th:text="${#temporals.format(f.fechaInicio, 'dd/MM/yyyy')}"></td>
 				<td th:text="${#temporals.format(f.fechaFin, 'dd/MM/yyyy')}"></td>
 				<td th:text="${f.duracionDias}"></td>
-				<td><a class="btn btn-sm btn-outline-primary" th:href="@{/admin/festival/{id}/unidades(id=${f.id})}">Ver unidades de venta</a></td>
+				<td class="text-nowrap"><a class="btn btn-sm btn-outline-primary" th:href="@{/admin/festival/{id}/unidades(id=${f.id})}">Ver unidades</a> <a class="btn btn-sm btn-outline-success" th:href="@{/admin/festival/{id}/ranking(id=${f.id})}">Mayor recaudación</a> <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/festival/{id}/mayores-canon(id=${f.id})}">Mayores cánones</a></td>
 			</tr>
 		</tbody>
 	</table>
