@@ -2,6 +2,7 @@ package com.unla.epicentrogourmet.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -58,5 +59,19 @@ public class AdminController {
 		return mAV;
 	}
 
-	
+	@GetMapping("/festival/{id}/mayores-canon")
+	public ModelAndView mayoresCanon(@PathVariable("id") Long id,
+			@RequestParam(name = "x", defaultValue = "5") int cantidad) {
+		Festival festival = festivalService.findById(id).orElse(null);
+		if (festival == null) {
+			return new ModelAndView(new RedirectView(ViewRouteHelper.ADMIN_ROOT));
+		}
+		if (cantidad < 1) cantidad = 1;
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_MAYORES_CANON);
+		mAV.addObject("festival", festival);
+		mAV.addObject("cantidad", cantidad);
+		mAV.addObject("reporte", reporteService.mayoresCanon(id, cantidad));
+		return mAV;
+	}
+
 }

@@ -1,6 +1,8 @@
 package com.unla.epicentrogourmet.services;
+
 import java.util.List;
 import com.unla.epicentrogourmet.dtos.ReporteVentaDTO;
+import com.unla.epicentrogourmet.dtos.ReporteMayoresCanonDTO;
 import com.unla.epicentrogourmet.entities.UnidadVenta;
 
 public interface IReporteService {
@@ -10,4 +12,7 @@ public interface IReporteService {
 
 	/** Unidades de un festival ordenadas por recaudación descendente. */
 	List<ReporteVentaDTO> rankingRecaudacion(Long festivalId);
+
+	/** Las x unidades de un festival con mayor canon. */
+	List<ReporteMayoresCanonDTO> mayoresCanon(Long festivalId, int cantidad);
 }
