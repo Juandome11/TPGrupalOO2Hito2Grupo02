@@ -26,6 +26,7 @@ import com.unla.epicentrogourmet.services.IPlatoService;
 import com.unla.epicentrogourmet.services.IReporteService;
 import com.unla.epicentrogourmet.services.IStaffService;
 import com.unla.epicentrogourmet.services.IUnidadVentaService;
+import com.unla.epicentrogourmet.services.IRentabilidadService;
 
 import jakarta.validation.Valid;
 
@@ -40,13 +41,15 @@ public class ResponsableController {
 	private final IStaffService staffService;
 	private final IPlatoService platoService;
 	private final IReporteService reporteService;
+	private final IRentabilidadService rentabilidadService;
 
 	public ResponsableController(IUnidadVentaService unidadVentaService, IStaffService staffService,
-			IPlatoService platoService, IReporteService reporteService) {
+			IPlatoService platoService, IReporteService reporteService, IRentabilidadService rentabilidadService) {
 		this.unidadVentaService = unidadVentaService;
 		this.staffService = staffService;
 		this.platoService = platoService;
 		this.reporteService = reporteService;
+		this.rentabilidadService = rentabilidadService;
 	}
 
 	// ---------------------------------------------------------------- inicio
@@ -207,6 +210,18 @@ public class ResponsableController {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.RESP_RECAUDACION);
 		unidadVentaService.findByResponsableUsername(principal.getName())
 				.ifPresent(u -> mAV.addObject("reporte", reporteService.recaudacion(u)));
+		return mAV;
+	}
+	@GetMapping("/rentabilidad")
+	public ModelAndView rentabilidad(Principal principal) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.RESP_RENTABILIDAD);
+		Optional<UnidadVenta> unidad = unidadVentaService.findByResponsableUsername(principal.getName());
+		mAV.addObject("unidad", unidad.orElse(null));
+		try {
+			unidad.ifPresent(u -> mAV.addObject("reporte", rentabilidadService.rentabilidad(u)));
+		} catch (NegocioException e) {
+			mAV.addObject("error", e.getMessage());
+		}
 		return mAV;
 	}
 }
