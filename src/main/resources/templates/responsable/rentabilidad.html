@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Rentabilidad neta')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container my-4" style="max-width: 640px;">
+    <h1 class="h3 mb-3">Rentabilidad neta</h1>
+    <div class="alert alert-warning" th:if="${unidad == null}">No tenés una unidad de venta asignada.</div>
+    <div class="alert alert-danger" th:if="${error}" th:text="${error}"></div>
+
+    <div class="card" th:if="${reporte != null}">
+        <div class="card-body">
+            <p class="mb-1"><strong>Festival:</strong> <span th:text="${reporte.festivalNombre}"></span></p>
+            <p class="mb-3"><strong>Unidad:</strong> <span th:text="${reporte.unidadNombre}"></span></p>
+            <table class="table table-sm mb-0">
+                <tr><td>Pedidos totales (recaudación)</td>
+                    <td class="text-right" th:text="${'$ ' + #numbers.formatDecimal(reporte.recaudacion, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+                <tr><td>- Costo de los platos</td>
+                    <td class="text-right" th:text="${'$ ' + #numbers.formatDecimal(reporte.costoPlatos, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+                <tr class="font-weight-bold"><td>= Ganancia bruta</td>
+                    <td class="text-right" th:text="${'$ ' + #numbers.formatDecimal(reporte.gananciaBruta, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+                <tr><td>- Sueldos</td>
+                    <td class="text-right" th:text="${'$ ' + #numbers.formatDecimal(reporte.sueldos, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+                <tr><td>- Canon</td>
+                    <td class="text-right" th:text="${'$ ' + #numbers.formatDecimal(reporte.canon, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+                <tr class="font-weight-bold"><td>= Rentabilidad neta</td>
+                    <td class="text-right" th:classappend="${reporte.rentabilidadNeta.signum() < 0} ? 'text-danger' : 'text-success'"
+                        th:text="${'$ ' + #numbers.formatDecimal(reporte.rentabilidadNeta, 1, 'POINT', 2, 'COMMA')}"></td></tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

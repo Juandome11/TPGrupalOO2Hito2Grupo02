@@ -25,6 +25,8 @@ public final class ViewRouteHelper {
 	public static final String RESP_PLATOS = "responsable/platos";
 	public static final String RESP_PLATO_FORM = "responsable/plato-form";
 	public static final String RESP_RECAUDACION = "responsable/recaudacion";
+	public static final String RESP_RENTABILIDAD = "responsable/rentabilidad";
+	public static final String RESP_RENTABILIDAD_FECHAS = "responsable/rentabilidad-fechas";
 
 	// Empleado
 	public static final String EMP_HOME = "empleado/index";
