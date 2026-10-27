@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import com.unla.epicentrogourmet.exceptions.NegocioException;
 
 import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.helpers.ViewRouteHelper;
@@ -84,9 +85,13 @@ public class AdminController {
 
     @GetMapping("/festival/{festivalId}/unidad/{unidadId}/plato-estrella")
     public String platoEstrella(@PathVariable Long festivalId, @PathVariable Long unidadId, Model model) {
-        Map<String, Object> datos = platoService.obtenerDatosPlatoEstrellaYRanking(unidadId, festivalId);
-        model.addAttribute("platoEstrella", datos.get("platoEstrella"));
-        model.addAttribute("ranking", datos.get("ranking"));
+        try {
+            Map<String, Object> datos = platoService.obtenerDatosPlatoEstrellaYRanking(unidadId, festivalId);
+            model.addAttribute("platoEstrella", datos.get("platoEstrella"));
+            model.addAttribute("ranking", datos.get("ranking"));
+        } catch (NegocioException e) {
+            model.addAttribute("error", e.getMessage());
+        }
         model.addAttribute("festivalId", festivalId);
         return "admin/plato-estrella";
     }
