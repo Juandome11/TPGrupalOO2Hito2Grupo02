@@ -1,11 +1,13 @@
 package com.unla.epicentrogourmet;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -17,6 +19,7 @@ import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.entities.FoodTrack;
 import com.unla.epicentrogourmet.entities.RolCocina;
 import com.unla.epicentrogourmet.entities.Staff;
+import com.unla.epicentrogourmet.exceptions.NegocioException;
 import com.unla.epicentrogourmet.repositories.IAsignacionRepository;
 import com.unla.epicentrogourmet.repositories.IDetallePedidoRepository;
 import com.unla.epicentrogourmet.repositories.IPedidoRepository;
@@ -88,5 +91,41 @@ class RentabilidadServiceTest {
         assertThat(r.getRecaudacion()).isEqualByComparingTo("0");
         assertThat(r.getCostoPlatos()).isEqualByComparingTo("0");
         assertThat(r.getRentabilidadNeta()).isEqualByComparingTo("-8000");
+    }
+
+    @Test
+    void entreFechasSueldosYCanonSeRestanEnProporcionALosDiasDelRango() {
+        FoodTrack unidad = unidad();
+        Staff responsable = new Staff();
+        responsable.setFechaIngreso(LocalDate.of(2026, 9, 1));
+        Cocinero cocinero = new Cocinero();
+        cocinero.setRolCocina(RolCocina.COCINERO);
+        cocinero.setFechaIngreso(LocalDate.of(2022, 3, 1));
+        LocalDate desde = LocalDate.of(2026, 9, 20);
+        LocalDate hasta = LocalDate.of(2026, 10, 10);
+
+        when(detallePedidoRepository.sumarRecaudacionEntre(10L, 1L, desde, hasta))
+                .thenReturn(new BigDecimal("30000"));
+        when(detallePedidoRepository.sumarCostoProduccionEntre(10L, 1L, desde, hasta))
+                .thenReturn(new BigDecimal("10000"));
+        when(asignacionRepository.staffDeLaUnidad(10L)).thenReturn(List.of(responsable, cocinero));
+
+        ReporteRentabilidadDTO r = service.rentabilidad(unidad, desde, hasta);
+
+        assertThat(r.getSueldos()).isEqualByComparingTo("262500");
+        assertThat(r.getCanon()).isEqualByComparingTo("4000");
+        assertThat(r.getRentabilidadNeta()).isEqualByComparingTo("-246500");
+    }
+
+    @Test
+    void entreFechasConDesdePosteriorAHastaEsError() {
+        assertThatThrownBy(() -> service.rentabilidad(unidad(), LocalDate.of(2026, 10, 10), LocalDate.of(2026, 9, 20)))
+                .isInstanceOf(NegocioException.class);
+    }
+
+    @Test
+    void entreFechasConUnRangoFueraDelFestivalEsError() {
+        assertThatThrownBy(() -> service.rentabilidad(unidad(), LocalDate.of(2027, 1, 1), LocalDate.of(2027, 1, 5)))
+                .isInstanceOf(NegocioException.class);
     }
 }

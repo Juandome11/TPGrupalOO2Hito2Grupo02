@@ -1,8 +1,14 @@
 package com.unla.epicentrogourmet.services.implementation;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.unla.epicentrogourmet.dtos.ReporteRentabilidadDTO;
 import com.unla.epicentrogourmet.entities.Costo;
 import com.unla.epicentrogourmet.entities.Festival;
@@ -31,6 +37,7 @@ public class RentabilidadService implements IRentabilidadService {
         this.liquidacionService = liquidacionService;
     }
 
+    // --- METODO DEL CASO DE USO 3 ---
     @Override
     @Transactional(readOnly = true)
     public ReporteRentabilidadDTO rentabilidad(UnidadVenta unidad) {
@@ -39,6 +46,38 @@ public class RentabilidadService implements IRentabilidadService {
         BigDecimal costoPlatos = cero(detallePedidoRepository.sumarCostoProduccion(unidad.getId(), festival.getId()));
         return new ReporteRentabilidadDTO(festival.getNombre(), unidad.getNombreComercial(), festival.getFechaInicio(),
                 festival.getFechaFin(), recaudacion, costoPlatos, sueldosDe(unidad), canonDe(unidad));
+    }
+
+    // --- METODO DEL CASO DE USO 4 ---
+    @Override
+    @Transactional(readOnly = true)
+    public ReporteRentabilidadDTO rentabilidad(UnidadVenta unidad, LocalDate desde, LocalDate hasta) {
+        Festival festival = unidad.getFestival();
+        if (desde.isAfter(hasta)) {
+            throw new NegocioException("La fecha desde no puede ser posterior a la fecha hasta.");
+        }
+        if (hasta.isBefore(festival.getFechaInicio()) || desde.isAfter(festival.getFechaFin())) {
+            throw new NegocioException("El rango elegido no coincide con las fechas del festival.");
+        }
+        LocalDate inicio = desde.isBefore(festival.getFechaInicio()) ? festival.getFechaInicio() : desde;
+        LocalDate fin = hasta.isAfter(festival.getFechaFin()) ? festival.getFechaFin() : hasta;
+
+        BigDecimal recaudacion = cero(
+                detallePedidoRepository.sumarRecaudacionEntre(unidad.getId(), festival.getId(), inicio, fin));
+        BigDecimal costoPlatos = cero(
+                detallePedidoRepository.sumarCostoProduccionEntre(unidad.getId(), festival.getId(), inicio, fin));
+
+        long diasRango = ChronoUnit.DAYS.between(inicio, fin) + 1;
+        long duracionTotalFestival = ChronoUnit.DAYS.between(festival.getFechaInicio(), festival.getFechaFin()) + 1;
+
+        BigDecimal proporcion = BigDecimal.valueOf(diasRango)
+                .divide(BigDecimal.valueOf(duracionTotalFestival), 10, RoundingMode.HALF_UP);
+
+        BigDecimal sueldos = sueldosDe(unidad).multiply(proporcion).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal canon = canonDe(unidad).multiply(proporcion).setScale(2, RoundingMode.HALF_UP);
+
+        return new ReporteRentabilidadDTO(festival.getNombre(), unidad.getNombreComercial(), inicio, fin,
+                recaudacion, costoPlatos, sueldos, canon);
     }
 
     private BigDecimal sueldosDe(UnidadVenta unidad) {

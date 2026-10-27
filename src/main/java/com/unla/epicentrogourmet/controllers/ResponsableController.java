@@ -1,8 +1,12 @@
 package com.unla.epicentrogourmet.controllers;
 
+import java.time.LocalDate;
 import java.security.Principal;
 import java.util.Optional;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +36,7 @@ import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/responsable")
+@PreAuthorize("hasRole('ROLE_RESPONSABLE')")
 public class ResponsableController {
 
 	private static final String EMPLEADO_ATTR = "empleado";
@@ -64,6 +69,14 @@ public class ResponsableController {
 				mAV.addObject("canon", u.calcularCanon(u.getFestival().getCosto()));
 			}
 		});
+		return mAV;
+	}
+
+	@GetMapping("/index")
+	public ModelAndView indexAlternativo(Principal principal) {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.RESP_HOME);
+		Optional<UnidadVenta> unidad = unidadVentaService.findByResponsableUsername(principal.getName());
+		mAV.addObject("unidad", unidad.orElse(null));
 		return mAV;
 	}
 
@@ -212,6 +225,7 @@ public class ResponsableController {
 				.ifPresent(u -> mAV.addObject("reporte", reporteService.recaudacion(u)));
 		return mAV;
 	}
+
 	@GetMapping("/rentabilidad")
 	public ModelAndView rentabilidad(Principal principal) {
 		ModelAndView mAV = new ModelAndView(ViewRouteHelper.RESP_RENTABILIDAD);
@@ -221,6 +235,29 @@ public class ResponsableController {
 			unidad.ifPresent(u -> mAV.addObject("reporte", rentabilidadService.rentabilidad(u)));
 		} catch (NegocioException e) {
 			mAV.addObject("error", e.getMessage());
+		}
+		return mAV;
+	}
+
+	@GetMapping("/rentabilidad-fechas")
+	public ModelAndView rentabilidadFechas(
+			@RequestParam(name = "desde", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate desde,
+			@RequestParam(name = "hasta", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta,
+			Principal principal) {
+
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.RESP_RENTABILIDAD_FECHAS);
+		Optional<UnidadVenta> unidad = unidadVentaService.findByResponsableUsername(principal.getName());
+		mAV.addObject("unidad", unidad.orElse(null));
+
+		if (desde != null && hasta != null && unidad.isPresent()) {
+			try {
+				var reporte = rentabilidadService.rentabilidad(unidad.get(), desde, hasta);
+				mAV.addObject("reporte", reporte);
+				mAV.addObject("desde", desde);
+				mAV.addObject("hasta", hasta);
+			} catch (NegocioException e) {
+				mAV.addObject("error", e.getMessage());
+			}
 		}
 		return mAV;
 	}
