@@ -80,8 +80,22 @@ Base grupal inicial (Hito 2), subida directo a `main`:
 
 Casos de uso individuales (2 por integrante, cada uno en su rama `CUFuncionalidadNombreApellido` + Pull Request):
 
-| Caso de uso | Responsable | PR |
-|---|---|---|
-| _(a completar)_ | | |
+| Caso de uso | Rol | Responsable | PR |
+|---|---|---|---|
+| Ranking de Unidades por recaudación de un festival | Administrador | MarioArcade | [PR #1](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/1) |
+| Unidades con Mayor Canon (`ReporteMayoresCanonDTO`, parámetro `x`) | Administrador | MarioArcade | [PR #1](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/1) |
+| Alta de festival con sus costos (valida que el período sea válido) | Administrador | MarioArcade | [PR #4](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/4) |
+| Rentabilidad Neta de una unidad en un festival | Responsable | nahuelp22 | [PR #2](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/2) |
+| Rentabilidad Neta entre dos fechas | Responsable | nahuelp22 | [PR #2](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/2) |
+| Plato Estrella (`PlatoDTO`) con ranking de platos | Administrador | richarttttt | [PR #3](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/3) |
+| Carga de pedidos con validación de fecha | Responsable | richarttttt | [PR #3](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/3) |
+| _(pendiente)_ Cerrar Caja del cajero | Empleado (cajero) | Juandome11 | _a completar_ |
 
-Quedan por repartir entre los integrantes: Ranking de Unidades, Unidades con Mayor Canon (`ReporteMayoresCanonDTO`), Rentabilidad Neta (total y entre dos fechas), Plato Estrella (`PlatoDTO`), Cerrar Caja del cajero, y la carga de pedidos con validación de fecha.
+Validaciones de carga implementadas por los integrantes:
+
+- Período del festival válido (la fecha de fin no puede ser anterior a la de inicio).
+- Rango de fechas del reporte válido (desde no posterior a hasta, y dentro del festival).
+- La fecha del pedido debe ser la del día en que se carga.
+- El pedido debe tener al menos un ítem, y los platos tienen que pertenecer a la misma unidad.
+
+Pendiente: Cerrar Caja y las validaciones de formato de DNI, formato de patente, plato sin nombre repetido y nombre comercial único por festival.

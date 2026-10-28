@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 import com.unla.epicentrogourmet.dtos.FestivalAltaDTO;
 import com.unla.epicentrogourmet.entities.Festival;
+import com.unla.epicentrogourmet.exceptions.NegocioException;
 import com.unla.epicentrogourmet.helpers.ViewRouteHelper;
 import com.unla.epicentrogourmet.services.IFestivalService;
 import com.unla.epicentrogourmet.services.IUnidadVentaService;
@@ -49,13 +50,7 @@ public class AdminController {
         return mAV;
     }
 
-	@GetMapping("")
-	public ModelAndView festivales() {
-		ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_FESTIVALES);
-		mAV.addObject("festivales", festivalService.getAll());
-		return mAV;
-	}
-	@GetMapping("/festival/nuevo")
+    @GetMapping("/festival/nuevo")
     public ModelAndView nuevoFestival() {
         ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_FESTIVAL_FORM);
         FestivalAltaDTO dto = new FestivalAltaDTO();
@@ -99,6 +94,18 @@ public class AdminController {
 		mAV.addObject("unidades", unidadVentaService.findByFestival(id));
 		return mAV;
 	}
+
+    @GetMapping("/festival/{id}/ranking")
+    public ModelAndView ranking(@PathVariable("id") Long id) {
+        Festival festival = festivalService.findById(id).orElse(null);
+        if (festival == null) {
+            return new ModelAndView(new RedirectView(ViewRouteHelper.ADMIN_ROOT));
+        }
+        ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_RANKING);
+        mAV.addObject("festival", festival);
+        mAV.addObject("ranking", reporteService.rankingRecaudacion(id));
+        return mAV;
+    }
 
     @GetMapping("/festival/{id}/mayores-canon")
     public ModelAndView mayoresCanon(@PathVariable("id") Long id,

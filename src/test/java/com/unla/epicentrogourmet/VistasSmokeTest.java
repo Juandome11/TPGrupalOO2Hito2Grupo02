@@ -42,6 +42,11 @@ class VistasSmokeTest {
 	void vistasDelAdministrador() throws Exception {
 		mvc.perform(get("/admin")).andExpect(status().isOk());
 		mvc.perform(get("/admin/festival/1/unidades")).andExpect(status().isOk());
+		mvc.perform(get("/admin/festival/nuevo")).andExpect(status().isOk());
+		mvc.perform(get("/admin/festival/1/ranking")).andExpect(status().isOk())
+				.andExpect(content().string(Matchers.containsString("Parrilla Don Mario")));
+		mvc.perform(get("/admin/festival/1/mayores-canon?x=2")).andExpect(status().isOk());
+		mvc.perform(get("/admin/festival/1/unidad/1/plato-estrella")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -54,6 +59,9 @@ class VistasSmokeTest {
 		mvc.perform(get("/responsable/platos")).andExpect(status().isOk());
 		mvc.perform(get("/responsable/platos/nuevo")).andExpect(status().isOk());
 		mvc.perform(get("/responsable/recaudacion")).andExpect(status().isOk());
+		mvc.perform(get("/responsable/rentabilidad")).andExpect(status().isOk());
+		mvc.perform(get("/responsable/rentabilidad-fechas")).andExpect(status().isOk());
+		mvc.perform(get("/responsable/pedidos/nuevo")).andExpect(status().isOk());
 	}
 
 	@Test
