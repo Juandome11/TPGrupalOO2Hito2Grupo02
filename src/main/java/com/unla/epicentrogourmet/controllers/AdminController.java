@@ -2,18 +2,24 @@ package com.unla.epicentrogourmet.controllers;
 import java.util.Map;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
-import com.unla.epicentrogourmet.exceptions.NegocioException;
-
+import com.unla.epicentrogourmet.dtos.FestivalAltaDTO;
 import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.helpers.ViewRouteHelper;
 import com.unla.epicentrogourmet.services.IFestivalService;
 import com.unla.epicentrogourmet.services.IUnidadVentaService;
+
+import jakarta.validation.Valid;
+
 import com.unla.epicentrogourmet.services.IReporteService;
 import com.unla.epicentrogourmet.services.IPlatoService; // <-- Importante
 
@@ -43,29 +49,56 @@ public class AdminController {
         return mAV;
     }
 
-    @GetMapping("/festival/{id}/unidades")
-    public ModelAndView unidades(@PathVariable("id") Long id) {
-        Festival festival = festivalService.findById(id).orElse(null);
-        if (festival == null) {
-            return new ModelAndView(new RedirectView(ViewRouteHelper.ADMIN_ROOT));
-        }
-        ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_UNIDADES);
-        mAV.addObject("festival", festival);
-        mAV.addObject("unidades", unidadVentaService.findByFestival(id));
+	@GetMapping("")
+	public ModelAndView festivales() {
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_FESTIVALES);
+		mAV.addObject("festivales", festivalService.getAll());
+		return mAV;
+	}
+	@GetMapping("/festival/nuevo")
+    public ModelAndView nuevoFestival() {
+        ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_FESTIVAL_FORM);
+        FestivalAltaDTO dto = new FestivalAltaDTO();
+        dto.setCostoPorSuperficie(new java.math.BigDecimal("500"));
+        dto.setCostoPorMontaje(new java.math.BigDecimal("10"));
+        dto.setPlusElectricidad(new java.math.BigDecimal("2000"));
+        dto.setSueldoBase(new java.math.BigDecimal("100000"));
+        dto.setMontoAnioAntiguedad(new java.math.BigDecimal("5000"));
+        dto.setPlusCocinero(new java.math.BigDecimal("150000"));
+        dto.setPlusCocineroAyudante(new java.math.BigDecimal("100000"));
+        dto.setPlusLavaplatos(new java.math.BigDecimal("50000"));
+        mAV.addObject("festivalAlta", dto);
         return mAV;
     }
 
-    @GetMapping("/festival/{id}/ranking")
-    public ModelAndView ranking(@PathVariable("id") Long id) {
-        Festival festival = festivalService.findById(id).orElse(null);
-        if (festival == null) {
-            return new ModelAndView(new RedirectView(ViewRouteHelper.ADMIN_ROOT));
+    @PostMapping("/festival/nuevo")
+    public ModelAndView crearFestival(@Valid @ModelAttribute("festivalAlta") FestivalAltaDTO dto,
+            BindingResult bindingResult, RedirectAttributes flash) {
+        if (dto.getFechaInicio() != null && dto.getFechaFin() != null
+                && dto.getFechaFin().isBefore(dto.getFechaInicio())) {
+            bindingResult.rejectValue("fechaFin", "fechaFin.invalida",
+                    "La fecha de fin no puede ser anterior a la fecha de inicio.");
         }
-        ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_RANKING);
-        mAV.addObject("festival", festival);
-        mAV.addObject("ranking", reporteService.rankingRecaudacion(id));
-        return mAV;
+        if (bindingResult.hasErrors()) {
+            ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_FESTIVAL_FORM);
+            mAV.addObject("festivalAlta", dto);
+            return mAV;
+        }
+        festivalService.crear(dto);
+        flash.addFlashAttribute("ok", "El festival se creó correctamente.");
+        return new ModelAndView(new RedirectView(ViewRouteHelper.ADMIN_ROOT));
     }
+	@GetMapping("/festival/{id}/unidades")
+	public ModelAndView unidades(@PathVariable("id") Long id) {
+		Festival festival = festivalService.findById(id).orElse(null);
+		if (festival == null) {
+			return new ModelAndView(new RedirectView(ViewRouteHelper.ADMIN_ROOT));
+		}
+		ModelAndView mAV = new ModelAndView(ViewRouteHelper.ADMIN_UNIDADES);
+		mAV.addObject("festival", festival);
+		mAV.addObject("unidades", unidadVentaService.findByFestival(id));
+		return mAV;
+	}
 
     @GetMapping("/festival/{id}/mayores-canon")
     public ModelAndView mayoresCanon(@PathVariable("id") Long id,

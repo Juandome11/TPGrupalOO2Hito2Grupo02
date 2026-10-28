@@ -4,7 +4,8 @@
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 <div class="container my-4">
-	<h1 class="h3 mb-3">Festivales</h1>
+	<div th:replace="~{fragments/layout :: mensajes}"></div>
+	<div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h3 mb-0">Festivales</h1><a class="btn btn-primary" th:href="@{/admin/festival/nuevo}">Crear festival</a></div>
 	<table class="table table-striped table-sm bg-white">
 		<thead class="thead-dark">
 			<tr><th>Nombre</th><th>Temporada</th><th>Desde</th><th>Hasta</th><th>Días</th><th></th></tr>
@@ -16,7 +17,7 @@
 				<td th:text="${#temporals.format(f.fechaInicio, 'dd/MM/yyyy')}"></td>
 				<td th:text="${#temporals.format(f.fechaFin, 'dd/MM/yyyy')}"></td>
 				<td th:text="${f.duracionDias}"></td>
-				<td class="text-nowrap"><a class="btn btn-sm btn-outline-primary" th:href="@{/admin/festival/{id}/unidades(id=${f.id})}">Ver unidades</a> <a class="btn btn-sm btn-outline-success" th:href="@{/admin/festival/{id}/ranking(id=${f.id})}">Mayor recaudación</a> <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/festival/{id}/mayores-canon(id=${f.id})}">Mayores cánones</a></td>
+				<td class="text-nowrap"><a class="btn btn-sm btn-outline-primary" th:href="@{/admin/festival/{id}/unidades(id=${f.id})}">Ver unidades</a> <a class="btn btn-sm btn-outline-success" th:href="@{/admin/festival/{id}/ranking(id=${f.id})}">Ranking</a> <a class="btn btn-sm btn-outline-secondary" th:href="@{/admin/festival/{id}/mayores-canon(id=${f.id})}">Mayores cánones</a></td>
 			</tr>
 		</tbody>
 	</table>

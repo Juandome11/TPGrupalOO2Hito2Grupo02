@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Crear festival')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div class="container my-4">
+  <div th:replace="~{fragments/layout :: mensajes}"></div>
+  <h1 class="h3 mb-3">Crear festival</h1>
+  <p class="text-muted">Completá los datos del festival y los costos que se utilizarán para calcular cánones y liquidaciones.</p>
+  <form th:action="@{/admin/festival/nuevo}" th:object="${festivalAlta}" method="post" class="bg-white border rounded p-4">
+    <h2 class="h5">Datos del festival</h2>
+    <div class="form-row">
+      <div class="form-group col-md-6"><label for="nombre">Nombre</label><input id="nombre" class="form-control" th:field="*{nombre}" required maxlength="150"><div class="text-danger small" th:errors="*{nombre}"></div></div>
+      <div class="form-group col-md-6"><label for="temporada">Temporada</label><input id="temporada" class="form-control" th:field="*{temporada}" required maxlength="100" placeholder="Ej. Primavera"><div class="text-danger small" th:errors="*{temporada}"></div></div>
+      <div class="form-group col-md-6"><label for="fechaInicio">Fecha de inicio</label><input id="fechaInicio" type="date" class="form-control" th:field="*{fechaInicio}" required><div class="text-danger small" th:errors="*{fechaInicio}"></div></div>
+      <div class="form-group col-md-6"><label for="fechaFin">Fecha de fin</label><input id="fechaFin" type="date" class="form-control" th:field="*{fechaFin}" required><div class="text-danger small" th:errors="*{fechaFin}"></div></div>
+    </div>
+    <hr><h2 class="h5">Costos y valores de referencia</h2>
+    <p class="text-muted small">Los valores sugeridos son los usados por los festivales de prueba; podés modificarlos.</p>
+    <div class="form-row">
+      <div class="form-group col-md-6"><label for="costoPorSuperficie">Costo por superficie ($)</label><input id="costoPorSuperficie" type="number" min="0.01" step="0.01" class="form-control" th:field="*{costoPorSuperficie}" required><div class="text-danger small" th:errors="*{costoPorSuperficie}"></div></div>
+      <div class="form-group col-md-6"><label for="costoPorMontaje">Costo por montaje ($)</label><input id="costoPorMontaje" type="number" min="0.01" step="0.01" class="form-control" th:field="*{costoPorMontaje}" required><div class="text-danger small" th:errors="*{costoPorMontaje}"></div></div>
+      <div class="form-group col-md-6"><label for="plusElectricidad">Plus de electricidad ($)</label><input id="plusElectricidad" type="number" min="0" step="0.01" class="form-control" th:field="*{plusElectricidad}" required><div class="text-danger small" th:errors="*{plusElectricidad}"></div></div>
+      <div class="form-group col-md-6"><label for="sueldoBase">Sueldo base ($)</label><input id="sueldoBase" type="number" min="0.01" step="0.01" class="form-control" th:field="*{sueldoBase}" required><div class="text-danger small" th:errors="*{sueldoBase}"></div></div>
+      <div class="form-group col-md-6"><label for="montoAnioAntiguedad">Monto por año de antigüedad ($)</label><input id="montoAnioAntiguedad" type="number" min="0" step="0.01" class="form-control" th:field="*{montoAnioAntiguedad}" required><div class="text-danger small" th:errors="*{montoAnioAntiguedad}"></div></div>
+      <div class="form-group col-md-6"><label for="plusCocinero">Plus de cocinero ($)</label><input id="plusCocinero" type="number" min="0" step="0.01" class="form-control" th:field="*{plusCocinero}" required><div class="text-danger small" th:errors="*{plusCocinero}"></div></div>
+      <div class="form-group col-md-6"><label for="plusCocineroAyudante">Plus de cocinero ayudante ($)</label><input id="plusCocineroAyudante" type="number" min="0" step="0.01" class="form-control" th:field="*{plusCocineroAyudante}" required><div class="text-danger small" th:errors="*{plusCocineroAyudante}"></div></div>
+      <div class="form-group col-md-6"><label for="plusLavaplatos">Plus de lavaplatos ($)</label><input id="plusLavaplatos" type="number" min="0" step="0.01" class="form-control" th:field="*{plusLavaplatos}" required><div class="text-danger small" th:errors="*{plusLavaplatos}"></div></div>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar festival</button>
+    <a class="btn btn-outline-secondary" th:href="@{/admin}">Cancelar</a>
+  </form>
+</div>
+</body>
+</html>
