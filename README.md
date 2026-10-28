@@ -66,17 +66,17 @@ Base grupal inicial (Hito 2), subida directo a `main`:
 
 | Caso de uso | Rol | Responsable | PR |
 |---|---|---|---|
-| Ver festivales en la página de inicio | público | Grupo | base inicial |
-| Login / logout con roles | todos | Grupo | base inicial |
-| Registro de Unidad de Venta con su Responsable (genera el usuario) | público | Grupo | base inicial |
-| Alta de empleados con envío de mail (usuario + contraseña generada) | Responsable | Grupo | base inicial |
-| Modificación y baja lógica de empleados, reactivación, filtros por varios atributos | Responsable | Grupo | base inicial |
-| Alta y listado de platos | Responsable | Grupo | base inicial |
-| Cálculo de canon (Food Truck / Puesto) | Responsable | Grupo | base inicial |
-| Reporte de recaudación (`ReporteVentaDTO`) | Responsable | Grupo | base inicial |
-| Ver festivales y unidades de venta de un festival | Administrador | Grupo | base inicial |
-| Ver festival y unidad actual, historial de festivales/unidades en los que trabajó con el sueldo de cada uno, y descarga del recibo en PDF por festival | Empleado | Grupo | base inicial |
-| Reasignación de un empleado que ya trabajó en un festival anterior (conserva su usuario y no se le envía otro mail) | Responsable | Grupo | base inicial |
+| Ver festivales en la página de inicio | público | Juandome11 | base inicial |
+| Login / logout con roles | todos | Juandome11 | base inicial |
+| Registro de Unidad de Venta con su Responsable (genera el usuario) | público | Juandome11 | base inicial |
+| Alta de empleados con envío de mail (usuario + contraseña generada) | Responsable | Juandome11 | base inicial |
+| Modificación y baja lógica de empleados, reactivación, filtros por varios atributos | Responsable | Juandome11 | base inicial |
+| Alta y listado de platos | Responsable | Juandome11 | base inicial |
+| Cálculo de canon (Food Truck / Puesto) | Responsable | Juandome11 | base inicial |
+| Reporte de recaudación (`ReporteVentaDTO`) | Responsable | Juandome11 | base inicial |
+| Ver festivales y unidades de venta de un festival | Administrador | Juandome11 | base inicial |
+| Ver festival y unidad actual, historial de festivales/unidades en los que trabajó con el sueldo de cada uno, y descarga del recibo en PDF por festival | Empleado | Juandome11 | base inicial |
+| Reasignación de un empleado que ya trabajó en un festival anterior (conserva su usuario y no se le envía otro mail) | Responsable | Juandome11 | base inicial |
 
 Casos de uso individuales (2 por integrante, cada uno en su rama `CUFuncionalidadNombreApellido` + Pull Request):
 
