@@ -52,7 +52,8 @@ class VistasSmokeTest {
 	@Test
 	@WithMockUser(username = "resp.parrilla", roles = "RESPONSABLE")
 	void vistasDelResponsable() throws Exception {
-		mvc.perform(get("/responsable")).andExpect(status().isOk());
+		mvc.perform(get("/responsable")).andExpect(status().isOk())
+				.andExpect(content().string(Matchers.containsString("/responsable/pedidos/nuevo")));
 		mvc.perform(get("/responsable/empleados")).andExpect(status().isOk());
 		mvc.perform(get("/responsable/empleados/nuevo")).andExpect(status().isOk());
 		mvc.perform(get("/responsable/empleados/3/editar")).andExpect(status().isOk());
@@ -61,7 +62,12 @@ class VistasSmokeTest {
 		mvc.perform(get("/responsable/recaudacion")).andExpect(status().isOk());
 		mvc.perform(get("/responsable/rentabilidad")).andExpect(status().isOk());
 		mvc.perform(get("/responsable/rentabilidad-fechas")).andExpect(status().isOk());
-		mvc.perform(get("/responsable/pedidos/nuevo")).andExpect(status().isOk());
+		// el formulario de pedidos muestra la unidad del responsable y los platos de su menú, con la fecha de hoy
+		mvc.perform(get("/responsable/pedidos/nuevo")).andExpect(status().isOk())
+				.andExpect(content().string(Matchers.containsString("Parrilla Don Mario")))
+				.andExpect(content().string(Matchers.containsString("Hamburguesa completa")))
+				.andExpect(content().string(Matchers.containsString(java.time.LocalDate.now().toString())))
+				.andExpect(content().string(Matchers.not(Matchers.containsString("ID de la Unidad"))));
 	}
 
 	@Test

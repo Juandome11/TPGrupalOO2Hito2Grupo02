@@ -3,8 +3,11 @@ package com.unla.epicentrogourmet.dtos;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class PedidoDTO {
     private Long unidadId;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate fecha;
     private List<DetallePedidoDTO> detalles;
 

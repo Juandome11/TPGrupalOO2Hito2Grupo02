@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.transaction.annotation.Transactional;
 
 import com.unla.epicentrogourmet.repositories.IAsignacionRepository;
+import com.unla.epicentrogourmet.repositories.IPedidoRepository;
 import com.unla.epicentrogourmet.repositories.IStaffRepository;
 import com.unla.epicentrogourmet.services.IEmailService;
 
@@ -47,6 +48,9 @@ class FormulariosTest {
 
 	@Autowired
 	private IStaffRepository staffRepository;
+
+	@Autowired
+	private IPedidoRepository pedidoRepository;
 
 	@MockBean
 	private IEmailService emailService;
@@ -100,6 +104,45 @@ class FormulariosTest {
 		org.assertj.core.api.Assertions.assertThat(asignacionRepository.historialDe(tomasId)).hasSize((int) antes + 1);
 		org.assertj.core.api.Assertions.assertThat(staffRepository.findByDni("37999000").orElseThrow().getUnidadVenta().getNombreComercial())
 				.isEqualTo("Parrilla Don Mario");
+	}
+
+	private java.math.BigDecimal recaudado(long unidadId) {
+		java.math.BigDecimal total = pedidoRepository.sumarRecaudacion(unidadId, 1L);
+		return total == null ? java.math.BigDecimal.ZERO : total;
+	}
+
+	@Test
+	@WithMockUser(username = "resp.parrilla", roles = "RESPONSABLE")
+	void elPedidoSeCargaSiempreEnLaUnidadDelResponsableAunqueElFormularioTraigaOtra() throws Exception {
+		java.math.BigDecimal parrillaAntes = recaudado(1);
+		java.math.BigDecimal dulcesAntes = recaudado(2);
+
+		mvc.perform(post("/responsable/pedidos/nuevo").with(csrf())
+				.param("unidadId", "2") // intento de cargarlo en la unidad de otro responsable
+				.param("fecha", LocalDate.now().toString())
+				.param("detalles[0].platoId", "1").param("detalles[0].cantidad", "2") // 2 x 8500
+				.param("detalles[1].platoId", "").param("detalles[1].cantidad", "1")) // fila vacia: se ignora
+				.andExpect(status().isOk())
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("Pedido registrado correctamente")));
+
+		org.assertj.core.api.Assertions.assertThat(recaudado(1)).isEqualByComparingTo(parrillaAntes.add(new java.math.BigDecimal("17000")));
+		org.assertj.core.api.Assertions.assertThat(recaudado(2)).isEqualByComparingTo(dulcesAntes);
+	}
+
+	@Test
+	@WithMockUser(username = "resp.parrilla", roles = "RESPONSABLE")
+	void elPedidoConFechaDeOtroDiaOSinPlatosSeRechaza() throws Exception {
+		mvc.perform(post("/responsable/pedidos/nuevo").with(csrf())
+				.param("fecha", LocalDate.now().minusDays(1).toString())
+				.param("detalles[0].platoId", "1").param("detalles[0].cantidad", "1"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("fecha actual")));
+
+		mvc.perform(post("/responsable/pedidos/nuevo").with(csrf())
+				.param("fecha", LocalDate.now().toString())
+				.param("detalles[0].platoId", "").param("detalles[0].cantidad", "1"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("al menos un plato")));
 	}
 
 	@Test
