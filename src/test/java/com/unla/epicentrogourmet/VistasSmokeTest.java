@@ -82,6 +82,21 @@ class VistasSmokeTest {
 
 	@Test
 	@WithMockUser(username = "marcos.caja@epicentro.test", roles = "EMPLEADO")
+	void elCajeroVeLaCajaDelDia() throws Exception {
+		mvc.perform(get("/empleado")).andExpect(status().isOk())
+				.andExpect(content().string(Matchers.containsString("Caja del día")))
+				.andExpect(content().string(Matchers.containsString("Cerrar caja")));
+	}
+
+	@Test
+	@WithMockUser(username = "lucia.cocina@epicentro.test", roles = "EMPLEADO")
+	void unCocineroNoVeLaCaja() throws Exception {
+		mvc.perform(get("/empleado")).andExpect(status().isOk())
+				.andExpect(content().string(Matchers.not(Matchers.containsString("Caja del día"))));
+	}
+
+	@Test
+	@WithMockUser(username = "marcos.caja@epicentro.test", roles = "EMPLEADO")
 	void unEmpleadoNoPuedeDescargarElReciboDeOtro() throws Exception {
 		Long deLucia = asignacionRepository.historialDe(3L).get(0).getId();
 		mvc.perform(get("/empleado/recibo/" + deLucia)).andExpect(status().isNotFound());

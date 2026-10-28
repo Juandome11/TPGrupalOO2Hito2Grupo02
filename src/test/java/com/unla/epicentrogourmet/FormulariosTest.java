@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -111,6 +112,23 @@ class FormulariosTest {
 		mvc.perform(post("/responsable/platos").with(csrf()).param("nombre", "Plato caro de hacer")
 				.param("precioVenta", "1000").param("costoProduccion", "3000")).andExpect(status().isOk())
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("no puede superar")));
+	}
+
+	@Test
+	@WithMockUser(username = "marcos.caja@epicentro.test", roles = "EMPLEADO")
+	void elCajeroCierraLaCajaUnaSolaVezPorDia() throws Exception {
+		mvc.perform(post("/empleado/caja/cerrar").with(csrf())).andExpect(status().is3xxRedirection())
+				.andExpect(redirectedUrl("/empleado")).andExpect(flash().attributeExists("ok"));
+
+		mvc.perform(post("/empleado/caja/cerrar").with(csrf())).andExpect(status().is3xxRedirection())
+				.andExpect(flash().attribute("error", "Ya cerraste la caja de hoy."));
+	}
+
+	@Test
+	@WithMockUser(username = "lucia.cocina@epicentro.test", roles = "EMPLEADO")
+	void unCocineroNoPuedeCerrarCaja() throws Exception {
+		mvc.perform(post("/empleado/caja/cerrar").with(csrf())).andExpect(status().is3xxRedirection())
+				.andExpect(flash().attribute("error", "Solo los cajeros pueden cerrar la caja."));
 	}
 
 	private MockHttpServletRequestBuilder registro(String codigo) {

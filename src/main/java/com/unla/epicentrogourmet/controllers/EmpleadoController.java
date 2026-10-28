@@ -10,15 +10,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.unla.epicentrogourmet.dtos.ReciboSueldoDTO;
 import com.unla.epicentrogourmet.dtos.TrabajoRealizadoDTO;
 import com.unla.epicentrogourmet.entities.Asignacion;
+import com.unla.epicentrogourmet.entities.Cajero;
+import com.unla.epicentrogourmet.entities.CierreCaja;
 import com.unla.epicentrogourmet.entities.Festival;
 import com.unla.epicentrogourmet.entities.Staff;
+import com.unla.epicentrogourmet.exceptions.NegocioException;
 import com.unla.epicentrogourmet.helpers.ViewRouteHelper;
+import com.unla.epicentrogourmet.services.ICierreCajaService;
 import com.unla.epicentrogourmet.services.ILiquidacionService;
 import com.unla.epicentrogourmet.services.IReciboPdfService;
 import com.unla.epicentrogourmet.services.IStaffService;
@@ -30,12 +37,14 @@ public class EmpleadoController {
 	private final IStaffService staffService;
 	private final ILiquidacionService liquidacionService;
 	private final IReciboPdfService reciboPdfService;
+	private final ICierreCajaService cierreCajaService;
 
 	public EmpleadoController(IStaffService staffService, ILiquidacionService liquidacionService,
-			IReciboPdfService reciboPdfService) {
+			IReciboPdfService reciboPdfService, ICierreCajaService cierreCajaService) {
 		this.staffService = staffService;
 		this.liquidacionService = liquidacionService;
 		this.reciboPdfService = reciboPdfService;
+		this.cierreCajaService = cierreCajaService;
 	}
 
 	/**
@@ -57,7 +66,27 @@ public class EmpleadoController {
 			mAV.addObject("festivalActivo", festival.estaActivo(LocalDate.now()));
 		}
 		mAV.addObject("historial", armarHistorial(empleado));
+		if (empleado instanceof Cajero && empleado.getUnidadVenta() != null) {
+			mAV.addObject("caja", cierreCajaService.resumenDelDia(empleado));
+			mAV.addObject("cierres", cierreCajaService.historial(empleado));
+		}
 		return mAV;
+	}
+
+	/** Solo para cajeros: cierra la caja del día con lo recaudado por su unidad. */
+	@PostMapping("/caja/cerrar")
+	public RedirectView cerrarCaja(Principal principal, RedirectAttributes flash) {
+		Staff empleado = staffService.findByUsername(principal.getName()).orElse(null);
+		try {
+			if (empleado == null) {
+				throw new NegocioException("No encontramos tu ficha de personal.");
+			}
+			CierreCaja cierre = cierreCajaService.cerrar(empleado);
+			flash.addFlashAttribute("ok", "Caja cerrada. Total del día: $ " + cierre.getTotal().toPlainString() + ".");
+		} catch (NegocioException e) {
+			flash.addFlashAttribute("error", e.getMessage());
+		}
+		return new RedirectView("/empleado");
 	}
 
 	@GetMapping("/recibo/{asignacionId}")
