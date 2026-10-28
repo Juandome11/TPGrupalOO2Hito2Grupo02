@@ -93,10 +93,10 @@ Casos de uso individuales (2 por integrante, cada uno en su rama `CUFuncionalida
 
 Validaciones de carga implementadas por los integrantes:
 
-- Período del festival válido (la fecha de fin no puede ser anterior a la de inicio).
-- Rango de fechas del reporte válido (desde no posterior a hasta, y dentro del festival).
-- La fecha del pedido debe ser la del día en que se carga.
-- El pedido debe tener al menos un ítem, y los platos tienen que pertenecer a la misma unidad.
+- Período del festival válido (la fecha de fin no puede ser anterior a la de inicio). marioarcade / nahuelp22
+- Rango de fechas del reporte válido (desde no posterior a hasta, y dentro del festival). nahuelp22
+- La fecha del pedido debe ser la del día en que se carga. Richarttttt
+- El pedido debe tener al menos un ítem, y los platos tienen que pertenecer a la misma unidad. Richarttttt
 - DNI de 7 u 8 dígitos, solo números (empleados y responsables). _Juandome11, rama `CUValidacionesCargaDomenighetti`._
 - Patente argentina válida (`AB123CD` o `ABC123`); se normaliza a mayúsculas y sin espacios ni guiones. _Juandome11._
 - Un plato no puede repetir el nombre de otro de la misma unidad. _Juandome11._
