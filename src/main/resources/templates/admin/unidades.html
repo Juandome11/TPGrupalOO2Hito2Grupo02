@@ -4,25 +4,39 @@
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 <div class="container my-4">
-	<a th:href="@{/admin}">&larr; Volver a festivales</a>
-	<h1 class="h3 my-3">Unidades de venta de <span th:text="${festival.nombre}"></span></h1>
+    <a th:href="@{/admin}">&larr; Volver a festivales</a>
+    <h1 class="h3 my-3">Unidades de venta de <span th:text="${festival.nombre}"></span></h1>
 
-	<div class="alert alert-info" th:if="${unidades.isEmpty()}">Este festival todavía no tiene unidades registradas.</div>
+    <div class="alert alert-info" th:if="${unidades.isEmpty()}">Este festival todavía no tiene unidades registradas.</div>
 
-	<table class="table table-striped table-sm bg-white" th:unless="${unidades.isEmpty()}">
-		<thead class="thead-dark">
-			<tr><th>Nombre comercial</th><th>Código</th><th>Tipo</th><th>Superficie (m²)</th><th>Responsable</th></tr>
-		</thead>
-		<tbody>
-			<tr th:each="u : ${unidades}">
-				<td th:text="${u.nombreComercial}"></td>
-				<td th:text="${u.codigo}"></td>
-				<td th:text="${u.tipo}"></td>
-				<td th:text="${u.superficie}"></td>
-				<td th:text="${u.responsable != null ? u.responsable.nombreCompleto : '-'}"></td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="table table-striped table-sm bg-white" th:unless="${unidades.isEmpty()}">
+        <thead class="thead-dark">
+        <tr>
+            <th>Nombre comercial</th>
+            <th>Código</th>
+            <th>Tipo</th>
+            <th>Superficie (m²)</th>
+            <th>Responsable</th>
+            <th>Acciones</th> <!-- Nueva columna para acciones -->
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="u : ${unidades}">
+            <td th:text="${u.nombreComercial}"></td>
+            <td th:text="${u.codigo}"></td>
+            <td th:text="${u.tipo}"></td>
+            <td th:text="${u.superficie}"></td>
+            <td th:text="${u.responsable != null ? u.responsable.nombreCompleto : '-'}"></td>
+            <td class="text-nowrap">
+                <!-- Botón para ver el Plato Estrella de esta unidad en este festival -->
+                <a class="btn btn-sm btn-outline-info"
+                   th:href="@{/admin/festival/{fId}/unidad/{uId}/plato-estrella(fId=${festival.id}, uId=${u.id})}">
+                    Plato Estrella
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>

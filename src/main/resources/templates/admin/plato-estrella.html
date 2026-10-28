@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Plato Estrella - Epicentro Gourmet</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-dark bg-dark px-4">
+    <span class="navbar-brand">Epicentro Gourmet</span>
+</nav>
+
+<div class="container mt-4">
+    <a th:href="@{/admin/festival/{id}/unidades(id=${festivalId})}" class="btn btn-secondary mb-3">← Volver a unidades</a>
+
+    <h2 class="mb-4">Plato Estrella y Ranking de Ventas</h2>
+
+    <!-- Si hay un error (ej: no hay ventas), mostramos una alerta amigable -->
+    <div th:if="${error}" class="alert alert-warning shadow-sm" role="alert">
+        ⚠️ <span th:text="${error}">No hay ventas registradas.</span>
+    </div>
+
+    <!-- Si NO hay error, mostramos la tarjeta y la tabla normalmente -->
+    <div th:unless="${error}">
+        <!-- Tarjeta del Plato Estrella (1° Puesto) -->
+        <div class="card border-warning mb-4 shadow-sm">
+            <div class="card-header bg-warning text-dark fw-bold">
+                ⭐ Plato Estrella (1° Puesto)
+            </div>
+            <div class="card-body">
+                <h3 class="card-title text-primary" th:text="${platoEstrella.nombre}">Nombre del Plato</h3>
+                <p class="mb-1"><strong>Precio de Venta:</strong> $<span th:text="${platoEstrella.precioVenta}">0.00</span></p>
+                <p class="mb-1"><strong>Costo de Producción:</strong> $<span th:text="${platoEstrella.costoProduccion}">0.00</span></p>
+                <p class="mb-1"><strong>Unidades Vendidas:</strong> <span class="badge bg-success" th:text="${platoEstrella.cantidadVendida}">0</span></p>
+                <p class="mb-0"><strong>Recaudación Total:</strong> $<span class="fw-bold text-success" th:text="${platoEstrella.recaudacionTotal}">0.00</span></p>
+            </div>
+        </div>
+
+        <!-- Tabla de Ranking Completo -->
+        <div class="card shadow-sm">
+            <div class="card-header fw-bold bg-dark text-white">📊 Comparación con el Resto de los Platos</div>
+            <div class="card-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Puesto</th>
+                        <th>Plato</th>
+                        <th>Precio</th>
+                        <th>Unidades Vendidas</th>
+                        <th>Recaudación Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="plato, iterStat : ${ranking}">
+                        <td class="fw-bold" th:text="${iterStat.count} + '°'">1°</td>
+                        <td th:text="${plato.nombre}">Plato</td>
+                        <td th:text="'$' + ${plato.precioVenta}">$0.00</td>
+                        <td th:text="${plato.cantidadVendida}">0</td>
+                        <td class="fw-bold text-success" th:text="'$' + ${plato.recaudacionTotal}">$0.00</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
