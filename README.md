@@ -89,7 +89,7 @@ Casos de uso individuales (2 por integrante, cada uno en su rama `CUFuncionalida
 | Rentabilidad Neta entre dos fechas | Responsable | nahuelp22 | [PR #2](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/2) |
 | Plato Estrella (`PlatoDTO`) con ranking de platos | Administrador | richarttttt | [PR #3](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/3) |
 | Carga de pedidos con validación de fecha | Responsable | richarttttt | [PR #3](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/3) |
-| _(pendiente)_ Cerrar Caja del cajero | Empleado (cajero) | Juandome11 | _a completar_ |
+| Cerrar Caja del cajero (una vez por día, total recaudado por su unidad) | Empleado (cajero) | Juandome11 | [PR #5](https://github.com/Juandome11/TPGrupalOO2Hito2Grupo02/pull/5) |
 
 Validaciones de carga implementadas por los integrantes:
 
@@ -98,4 +98,4 @@ Validaciones de carga implementadas por los integrantes:
 - La fecha del pedido debe ser la del día en que se carga.
 - El pedido debe tener al menos un ítem, y los platos tienen que pertenecer a la misma unidad.
 
-Pendiente: Cerrar Caja y las validaciones de formato de DNI, formato de patente, plato sin nombre repetido y nombre comercial único por festival.
+Pendiente: las validaciones de formato de DNI, formato de patente, plato sin nombre repetido y nombre comercial único por festival.
