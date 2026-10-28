@@ -14,6 +14,7 @@ public final class ViewRouteHelper {
 
 	// Administrador
 	public static final String ADMIN_FESTIVALES = "admin/festivales";
+	public static final String ADMIN_FESTIVAL_FORM = "admin/festival-form";
 	public static final String ADMIN_UNIDADES = "admin/unidades";
 	public static final String ADMIN_RANKING = "admin/ranking";
 	public static final String ADMIN_MAYORES_CANON = "admin/mayores-canon";
@@ -25,6 +26,8 @@ public final class ViewRouteHelper {
 	public static final String RESP_PLATOS = "responsable/platos";
 	public static final String RESP_PLATO_FORM = "responsable/plato-form";
 	public static final String RESP_RECAUDACION = "responsable/recaudacion";
+	public static final String RESP_RENTABILIDAD = "responsable/rentabilidad";
+	public static final String RESP_RENTABILIDAD_FECHAS = "responsable/rentabilidad-fechas";
 
 	// Empleado
 	public static final String EMP_HOME = "empleado/index";

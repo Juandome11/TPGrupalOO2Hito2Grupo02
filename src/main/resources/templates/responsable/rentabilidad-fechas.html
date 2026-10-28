@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Rentabilidad entre Fechas - Epicentro Gourmet</title>
+    <link rel="stylesheet" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="bg-light">
+
+<!-- Incluye la barra superior del layout -->
+<div th:replace="~{fragments/layout}"></div>
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1" th:text="${unidad != null ? unidad.nombreComercial : 'Mi Unidad'}">Parrilla Don Mario</h2>
+            <p class="text-muted mb-0">Rentabilidad entre dos fechas</p>
+        </div>
+        <a th:href="@{/responsable}" class="btn btn-outline-secondary">Volver</a>
+    </div>
+
+    <!-- Formulario con estilos Bootstrap -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form th:action="@{/responsable/rentabilidad-fechas}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="desde" class="form-label font-weight-bold">Desde</label>
+                    <input type="date" id="desde" name="desde" class="form-control" th:value="${desde}" required />
+                </div>
+                <div class="col-md-4">
+                    <label for="hasta" class="form-label font-weight-bold">Hasta</label>
+                    <input type="date" id="hasta" name="hasta" class="form-control" th:value="${hasta}" required />
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">Calcular</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alerta de error -->
+    <div th:if="${error != null}" class="alert alert-danger mb-4" th:text="${error}"></div>
+
+    <!-- Tarjeta de resultados -->
+    <div th:if="${reporte != null}" class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h5 class="mb-0">Resultado del Reporte</h5>
+        </div>
+        <div class="card-body">
+            <div class="row text-center mb-3">
+                <div class="col-md-3">
+                    <h6 class="text-muted">Recaudación</h6>
+                    <p class="h4 text-success" th:text="${'$ ' + #numbers.formatDecimal(reporte.recaudacion, 1, 'POINT', 2, 'COMMA')}">$ 0,00</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="text-muted">Costo Platos</h6>
+                    <p class="h4 text-danger" th:text="${'$ ' + #numbers.formatDecimal(reporte.costoPlatos, 1, 'POINT', 2, 'COMMA')}">$ 0,00</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="text-muted">Sueldos</h6>
+                    <p class="h4 text-warning" th:text="${'$ ' + #numbers.formatDecimal(reporte.sueldos, 1, 'POINT', 2, 'COMMA')}">$ 0,00</p>
+                </div>
+                <div class="col-md-3">
+                    <h6 class="text-muted">Canon</h6>
+                    <p class="h4 text-info" th:text="${'$ ' + #numbers.formatDecimal(reporte.canon, 1, 'POINT', 2, 'COMMA')}">$ 0,00</p>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center">
+                <h4>Rentabilidad Neta:
+                    <span th:class="${reporte.rentabilidadNeta.signum() >= 0 ? 'text-success font-weight-bold' : 'text-danger font-weight-bold'}"
+                          th:text="${'$ ' + #numbers.formatDecimal(reporte.rentabilidadNeta, 1, 'POINT', 2, 'COMMA')}">$ 0,00</span>
+                </h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
