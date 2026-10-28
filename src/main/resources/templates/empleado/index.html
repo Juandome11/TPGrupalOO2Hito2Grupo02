@@ -4,6 +4,7 @@
 <body>
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 <div class="container my-4" style="max-width: 820px;">
+	<div th:replace="~{fragments/layout :: mensajes}"></div>
 	<div class="alert alert-warning" th:if="${empleado == null}">No encontramos tu ficha de personal.</div>
 
 	<div th:if="${empleado != null}">
@@ -28,6 +29,35 @@
 					<p class="mb-0"><strong>Unidad de venta:</strong> <span th:text="${unidad.nombreComercial}"></span>
 						(<span th:text="${unidad.tipo}"></span>)</p>
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card mt-3" th:if="${caja != null}">
+		<div class="card-header">Caja del día</div>
+		<div class="card-body">
+			<p class="mb-1"><strong>Unidad:</strong> <span th:text="${caja.unidad}"></span></p>
+			<p class="mb-1"><strong>Fecha:</strong> <span th:text="${#temporals.format(caja.fecha, 'dd/MM/yyyy')}"></span></p>
+			<p class="mb-3"><strong th:text="${caja.cerrada} ? 'Total cerrado:' : 'Recaudado hasta ahora:'"></strong>
+				<span th:text="${'$ ' + #numbers.formatDecimal(caja.total, 1, 'POINT', 2, 'COMMA')}"></span></p>
+			<div class="alert alert-secondary" th:if="${caja.cerrada}">
+				Ya cerraste la caja de hoy (<span th:text="${#temporals.format(caja.cerradaEn, 'dd/MM/yyyy HH:mm')}"></span>).
+			</div>
+			<form th:unless="${caja.cerrada}" th:action="@{/empleado/caja/cerrar}" method="post">
+				<button type="submit" class="btn btn-primary">Cerrar caja</button>
+			</form>
+			<div th:if="${!#lists.isEmpty(cierres)}" class="mt-4">
+				<h2 class="h6">Cierres anteriores</h2>
+				<table class="table table-sm mb-0">
+					<thead><tr><th>Fecha</th><th>Unidad</th><th class="money">Total</th></tr></thead>
+					<tbody>
+					<tr th:each="c : ${cierres}">
+						<td th:text="${#temporals.format(c.fecha, 'dd/MM/yyyy')}"></td>
+						<td th:text="${c.unidadVenta.nombreComercial}"></td>
+						<td class="money" th:text="${'$ ' + #numbers.formatDecimal(c.total, 1, 'POINT', 2, 'COMMA')}"></td>
+					</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</div>
