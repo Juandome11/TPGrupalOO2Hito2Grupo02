@@ -56,6 +56,9 @@ public class UnidadVentaService implements IUnidadVentaService {
 		if (!foodTruck && !RegistroUnidadResponsableDTO.DESARMABLE.equals(dto.getTipo())) {
 			throw new NegocioException("El tipo de unidad no es válido.");
 		}
+		if (foodTruck) {
+			dto.setPatente(ValidacionHelper.normalizarPatente(dto.getPatente()));
+		}
 		validarDatosDeLaUnidad(dto, foodTruck);
 		validarDatosDelResponsable(dto);
 
@@ -73,7 +76,7 @@ public class UnidadVentaService implements IUnidadVentaService {
 		responsable = staffRepository.save(responsable);
 
 		UnidadVenta unidad = foodTruck ? crearFoodTruck(dto) : crearDesarmable(dto);
-		unidad.setNombreComercial(dto.getNombreComercial());
+		unidad.setNombreComercial(dto.getNombreComercial().trim());
 		unidad.setSuperficie(dto.getSuperficie());
 		unidad.setCodigo(dto.getCodigo());
 		unidad.setFestival(festival);
@@ -94,16 +97,22 @@ public class UnidadVentaService implements IUnidadVentaService {
 		if (unidadVentaRepository.existsByCodigo(dto.getCodigo())) {
 			throw new NegocioException("Ya existe una unidad con ese código.");
 		}
+		String nombreComercial = dto.getNombreComercial().trim();
+		if (unidadVentaRepository.existsByFestivalIdAndNombreComercialIgnoreCase(dto.getFestivalId(), nombreComercial)) {
+			throw new NegocioException("Ya existe una unidad llamada \"" + nombreComercial + "\" en este festival.");
+		}
 		if (foodTruck) {
 			if (dto.getPatente() == null || dto.getPatente().isBlank()) {
 				throw new NegocioException("La patente es obligatoria para un Food Truck.");
 			}
+			ValidacionHelper.validarPatente(dto.getPatente());
 		} else if (dto.getCantCarpas() == null || dto.getTiempoMontaje() == null) {
 			throw new NegocioException("La cantidad de carpas y el tiempo de montaje son obligatorios para un Puesto Desarmable.");
 		}
 	}
 
 	private void validarDatosDelResponsable(RegistroUnidadResponsableDTO dto) {
+		ValidacionHelper.validarDni(dto.getDni());
 		ValidacionHelper.validarMayorDeEdad(dto.getFechaNacimiento());
 		if (staffRepository.existsByDni(dto.getDni())) {
 			throw new NegocioException("Ya existe una persona registrada con ese DNI.");

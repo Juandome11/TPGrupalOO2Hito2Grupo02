@@ -35,8 +35,12 @@ public class PlatoService implements IPlatoService {
         if (dto.getCostoProduccion().compareTo(dto.getPrecioVenta()) > 0) {
             throw new NegocioException("El costo de producción no puede superar el precio de venta.");
         }
+        String nombre = dto.getNombre().trim();
+        if (platoRepository.existsByUnidadVentaIdAndNombreIgnoreCase(unidad.getId(), nombre)) {
+            throw new NegocioException("Tu unidad ya tiene un plato llamado \"" + nombre + "\".");
+        }
         Plato plato = new Plato();
-        plato.setNombre(dto.getNombre());
+        plato.setNombre(nombre);
         plato.setPrecioVenta(dto.getPrecioVenta());
         plato.setCostoProduccion(dto.getCostoProduccion());
         plato.setUnidadVenta(unidad);

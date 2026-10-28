@@ -55,6 +55,7 @@ public class StaffService implements IStaffService {
 	@Transactional
 	public ResultadoAlta altaEmpleado(String usernameResponsable, EmpleadoDTO dto) {
 		UnidadVenta unidad = unidadDe(usernameResponsable);
+		ValidacionHelper.validarDni(dto.getDni());
 		Optional<Staff> conMismoDni = staffRepository.findByDni(dto.getDni());
 		if (conMismoDni.isPresent() && esDeUnFestivalAnterior(conMismoDni.get(), unidad)) {
 			return reasignar(conMismoDni.get(), unidad);
@@ -203,6 +204,7 @@ public class StaffService implements IStaffService {
 	}
 
 	private void validar(EmpleadoDTO dto, Staff existente, UnidadVenta unidad) {
+		ValidacionHelper.validarDni(dto.getDni());
 		ValidacionHelper.validarMayorDeEdad(dto.getFechaNacimiento());
 		ValidacionHelper.validarFechaIngreso(dto.getFechaIngreso(), dto.getFechaNacimiento());
 

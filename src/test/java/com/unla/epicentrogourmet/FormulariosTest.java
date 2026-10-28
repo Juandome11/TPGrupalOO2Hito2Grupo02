@@ -133,4 +133,72 @@ class FormulariosTest {
 		mvc.perform(registro("PD-7654321")).andExpect(status().isOk())
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("formato FT-")));
 	}
+
+	// ---------------------------------------------------------------- validaciones de carga
+
+	@Test
+	@WithMockUser(username = "resp.parrilla", roles = "RESPONSABLE")
+	void altaDeEmpleadoConDniDeFormatoInvalidoMuestraElError() throws Exception {
+		for (String dni : new String[] { "123456", "1234567A", "12.345.678" }) {
+			mvc.perform(altaEmpleado(LocalDate.now().minusYears(25), dni)).andExpect(status().isOk())
+					.andExpect(content().string(org.hamcrest.Matchers.containsString("7 u 8 dígitos")));
+		}
+	}
+
+	private MockHttpServletRequestBuilder registroCon(String nombreComercial, String codigo, String patente, String dni,
+			String email, String username) {
+		return post("/unidad/registro").with(csrf())
+				.param("festivalId", "2").param("tipo", "FOOD_TRUCK").param("nombreComercial", nombreComercial)
+				.param("superficie", "10").param("codigo", codigo).param("patente", patente)
+				.param("nombre", "Rosa").param("apellido", "Vega").param("dni", dni)
+				.param("email", email).param("fechaNacimiento", "1985-03-20")
+				.param("username", username).param("password", "secreto1");
+	}
+
+	@Test
+	void registroConDniDeFormatoInvalidoMuestraElError() throws Exception {
+		mvc.perform(registroCon("Tacos del Norte", "FT-7654321", "XY987ZT", "27.123.456", "rosa@epicentro.test", "resp.tacos"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("7 u 8 dígitos")));
+	}
+
+	@Test
+	void registroConPatenteDeFormatoInvalidoMuestraElError() throws Exception {
+		mvc.perform(registroCon("Tacos del Norte", "FT-7654321", "A1B2C3D", "27123456", "rosa@epicentro.test", "resp.tacos"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("AB123CD o ABC123")));
+	}
+
+	@Test
+	void registroNormalizaLaPatenteEscritaConEspaciosYMinusculas() throws Exception {
+		mvc.perform(registroCon("Tacos del Norte", "FT-7654321", "xy 987-zt", "27123456", "rosa@epicentro.test", "resp.tacos"))
+				.andExpect(status().is3xxRedirection()).andExpect(redirectedUrl("/login?registrado=true"));
+	}
+
+	@Test
+	void noSePuedeRegistrarOtraUnidadConElMismoNombreEnElMismoFestival() throws Exception {
+		mvc.perform(registroCon("Tacos del Norte", "FT-7654321", "XY987ZT", "27123456", "rosa@epicentro.test", "resp.tacos"))
+				.andExpect(status().is3xxRedirection());
+
+		mvc.perform(registroCon(" tacos DEL norte ", "FT-7654322", "AB123CD", "28123456", "otra@epicentro.test", "resp.otra"))
+				.andExpect(status().isOk())
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("Ya existe una unidad llamada")));
+	}
+
+	@Test
+	@WithMockUser(username = "resp.parrilla", roles = "RESPONSABLE")
+	void noSePuedeCargarUnPlatoConUnNombreYaUsadoEnLaMismaUnidad() throws Exception {
+		for (String nombre : new String[] { "Hamburguesa completa", "  hamburguesa COMPLETA " }) {
+			mvc.perform(post("/responsable/platos").with(csrf()).param("nombre", nombre)
+					.param("precioVenta", "9000").param("costoProduccion", "3000")).andExpect(status().isOk())
+					.andExpect(content().string(org.hamcrest.Matchers.containsString("ya tiene un plato llamado")));
+		}
+	}
+
+	@Test
+	@WithMockUser(username = "resp.dulces", roles = "RESPONSABLE")
+	void elMismoNombreDePlatoSePuedeUsarEnOtraUnidad() throws Exception {
+		mvc.perform(post("/responsable/platos").with(csrf()).param("nombre", "Hamburguesa completa")
+				.param("precioVenta", "9000").param("costoProduccion", "3000")).andExpect(status().is3xxRedirection());
+	}
 }
