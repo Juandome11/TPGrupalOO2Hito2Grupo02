@@ -14,6 +14,8 @@ public interface IUnidadVentaRepository extends JpaRepository<UnidadVenta, Long>
 
 	boolean existsByCodigo(String codigo);
 
+	boolean existsByFestivalIdAndNombreComercialIgnoreCase(Long festivalId, String nombreComercial);
+
 	List<UnidadVenta> findByFestivalId(Long festivalId);
 
 	@Query("SELECT u FROM UnidadVenta u WHERE u.responsable.user.username = :username")

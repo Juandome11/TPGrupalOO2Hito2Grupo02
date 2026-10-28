@@ -16,6 +16,8 @@ public interface IPlatoRepository extends JpaRepository<Plato, Long> {
 
     List<Plato> findByUnidadVentaIdOrderByNombre(Long unidadVentaId);
 
+    boolean existsByUnidadVentaIdAndNombreIgnoreCase(Long unidadVentaId, String nombre);
+
     @Query("SELECT p FROM DetallePedido dp " +
             "JOIN dp.pedido pe " +
             "JOIN dp.plato p " +

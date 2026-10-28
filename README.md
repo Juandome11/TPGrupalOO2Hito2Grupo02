@@ -97,5 +97,7 @@ Validaciones de carga implementadas por los integrantes:
 - Rango de fechas del reporte válido (desde no posterior a hasta, y dentro del festival).
 - La fecha del pedido debe ser la del día en que se carga.
 - El pedido debe tener al menos un ítem, y los platos tienen que pertenecer a la misma unidad.
-
-Pendiente: las validaciones de formato de DNI, formato de patente, plato sin nombre repetido y nombre comercial único por festival.
+- DNI de 7 u 8 dígitos, solo números (empleados y responsables). _Juandome11, rama `CUValidacionesCargaDomenighetti`._
+- Patente argentina válida (`AB123CD` o `ABC123`); se normaliza a mayúsculas y sin espacios ni guiones. _Juandome11._
+- Un plato no puede repetir el nombre de otro de la misma unidad. _Juandome11._
+- Dos unidades del mismo festival no pueden tener el mismo nombre comercial. _Juandome11._
